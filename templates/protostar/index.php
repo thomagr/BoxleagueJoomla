@@ -48,6 +48,7 @@ JHtml::_('script', 'jui/html5.js', array('version' => 'auto', 'relative' => true
 
 // Add Stylesheets
 JHtml::_('stylesheet', 'template.css', array('version' => 'auto', 'relative' => true));
+JHtml::_('stylesheet', 'user.css', array('version' => 'auto', 'relative' => true));
 
 // Use of Google Font
 if ($this->params->get('googleFont'))
