@@ -152,11 +152,16 @@ class BoxleagueControllerMatchForm extends \Joomla\CMS\MVC\Controller\FormContro
 		$this->setMessage(Text::_('COM_BOXLEAGUE_ITEM_SAVED_SUCCESSFULLY'));
 		$menu = Factory::getApplication()->getMenu();
 		$item = $menu->getActive();
-		$url  = (empty($item->link) ? 'index.php?option=com_boxleague&view=matches' : $item->link);
-		$this->setRedirect(Route::_($url, false));
+//		$url  = (empty($item->link) ? 'index.php?option=com_boxleague&view=matches' : $item->link);
+//		$this->setRedirect(Route::_($url, false));
 
 		// Flush the data from the session.
 		$app->setUserState('com_boxleague.edit.match.data', null);
+
+        $url  = 'index.php/boxleague';
+        $link = Route::_($url, false);
+        $this->setRedirect($link, "saved successfully");
+        $app->redirect($url);
 	}
 
 	/**
@@ -184,8 +189,11 @@ class BoxleagueControllerMatchForm extends \Joomla\CMS\MVC\Controller\FormContro
 
 		$menu = Factory::getApplication()->getMenu();
 		$item = $menu->getActive();
-		$url  = (empty($item->link) ? 'index.php?option=com_boxleague&view=matches' : $item->link);
-		$this->setRedirect(Route::_($url, false));
+//        $url  = (empty($item->link) ? 'index.php?option=com_boxleague&view=matches' : $item->link);
+        $url  = 'index.php/boxleague';
+        $link = Route::_($url, false);
+		$this->setRedirect($link, "edit cancelled");
+        $app->redirect($url);
 	}
 
 	/**
