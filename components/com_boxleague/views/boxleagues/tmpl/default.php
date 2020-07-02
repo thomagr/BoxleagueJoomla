@@ -44,11 +44,19 @@ $document->addStyleSheet(Uri::root() . 'media/com_boxleague/css/list.css');
 		<thead>
 		<tr>
 			<?php if (isset($this->items[0]->state)): ?>
-				
+				<th width="5%">
+	<?php echo JHtml::_('grid.sort', 'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
+</th>
 			<?php endif; ?>
 
 							<th class=''>
 				<?php echo JHtml::_('grid.sort',  'COM_BOXLEAGUE_BOXLEAGUES_ID', 'a.id', $listDirn, $listOrder); ?>
+				</th>
+				<th class=''>
+				<?php echo JHtml::_('grid.sort',  'COM_BOXLEAGUE_BOXLEAGUES_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
+				</th>
+				<th class=''>
+				<?php echo JHtml::_('grid.sort',  'COM_BOXLEAGUE_BOXLEAGUES_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
 				</th>
 				<th class=''>
 				<?php echo JHtml::_('grid.sort',  'COM_BOXLEAGUE_BOXLEAGUES_BL_NAME', 'a.bl_name', $listDirn, $listOrder); ?>
@@ -58,9 +66,6 @@ $document->addStyleSheet(Uri::root() . 'media/com_boxleague/css/list.css');
 				</th>
 				<th class=''>
 				<?php echo JHtml::_('grid.sort',  'COM_BOXLEAGUE_BOXLEAGUES_BL_END_DATE', 'a.bl_end_date', $listDirn, $listOrder); ?>
-				</th>
-				<th class=''>
-				<?php echo JHtml::_('grid.sort',  'COM_BOXLEAGUE_BOXLEAGUES_BL_ARCHIVE', 'a.bl_archive', $listDirn, $listOrder); ?>
 				</th>
 
 
@@ -91,13 +96,27 @@ $document->addStyleSheet(Uri::root() . 'media/com_boxleague/css/list.css');
 
 				<?php if (isset($this->items[0]->state)) : ?>
 					<?php $class = ($canChange) ? 'active' : 'disabled'; ?>
-					
+					<td class="center">
+	<a class="btn btn-micro <?php echo $class; ?>" href="<?php echo ($canChange) ? JRoute::_('index.php?option=com_boxleague&task=boxleague.publish&id=' . $item->id . '&state=' . (($item->state + 1) % 2), false, 2) : '#'; ?>">
+	<?php if ($item->state == 1): ?>
+		<i class="icon-publish"></i>
+	<?php else: ?>
+		<i class="icon-unpublish"></i>
+	<?php endif; ?>
+	</a>
+</td>
 				<?php endif; ?>
 
 								<td>
 
 					<?php echo $item->id; ?>
 				</td>
+				<td>
+
+							<?php echo JFactory::getUser($item->created_by)->name; ?>				</td>
+				<td>
+
+							<?php echo JFactory::getUser($item->modified_by)->name; ?>				</td>
 				<td>
 				<?php if (isset($item->checked_out) && $item->checked_out) : ?>
 					<?php echo JHtml::_('jgrid.checkedout', $i, $item->uEditor, $item->checked_out_time, 'boxleagues.', $canCheckin); ?>
@@ -117,10 +136,6 @@ $document->addStyleSheet(Uri::root() . 'media/com_boxleague/css/list.css');
 					$date = $item->bl_end_date;
 					echo $date > 0 ? JHtml::_('date', $date, JText::_('DATE_FORMAT_LC6')) : '-';
 					?>				</td>
-				<td>
-
-					<?php echo $item->bl_archive; ?>
-				</td>
 
 
 								<?php if ($canEdit || $canDelete): ?>
