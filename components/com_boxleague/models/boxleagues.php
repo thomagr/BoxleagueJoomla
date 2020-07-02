@@ -43,7 +43,6 @@ class BoxleagueModelBoxleagues extends \Joomla\CMS\MVC\Model\ListModel
 				'bl_name', 'a.bl_name',
 				'bl_start_date', 'a.bl_start_date',
 				'bl_end_date', 'a.bl_end_date',
-				'bl_archive', 'a.bl_archive',
 			);
 		}
 
