@@ -66,8 +66,6 @@ $canEdit = BoxleagueHelpersBoxleague::canUserEdit($this->item, $user);
 
 	<?php echo $this->form->renderField('bl_end_date'); ?>
 
-	<?php echo $this->form->renderField('bl_archive'); ?>
-
 			<div class="control-group">
 				<div class="controls">
 
