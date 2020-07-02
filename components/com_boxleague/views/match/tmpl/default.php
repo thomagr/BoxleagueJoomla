@@ -10,36 +10,59 @@
 defined('_JEXEC') or die;
 
 $canEdit = JFactory::getUser()->authorise('core.edit', 'com_boxleague');
+$canEdit = true;
 
-if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'))
-{
-	$canEdit = JFactory::getUser()->id == $this->item->created_by;
-}
+//if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'))
+//{
+//	$canEdit = JFactory::getUser()->id == $this->item->created_by;
+//}
+    $match = BoxleagueCustomHelper::returnMatch($this->item->id);
+    $box = BoxleagueCustomHelper::returnBox($match->box_id);
+    $boxleague = BoxleagueCustomHelper::returnBox($box->boxleague_id);
+    $home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
+    $away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
+    $boxleague = BoxleagueCustomHelper::returnBoxleague($box->boxleague_id);
+    $home_user = JFactory::getUser($home_player->user_id);
+    $away_user = JFactory::getUser($away_player->user_id);
+//    echo "<br>Boxleague<br>";
+//    print_r($boxleague);
+//    echo "<br>Box<br>";
+//    print_r($box);
+//    echo "<br>Match<br>";
+//    print_r($match);
+//    echo "<br>Home Player<br>";
+//    print_r($home_player);
+//    echo "<br>Away Player<br>";
+//    print_r($away_player);
+//    echo "<br>Home User<br>";
+//    print_r($home_user);
+//    echo "<br>Away User<br>";
+//    print_r($away_user);
+
 ?>
 
 <div class="item_fields">
 
 	<table class="table">
-		
 
 		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_MATCH_ID'); ?></th>
-			<td><?php echo $this->item->id; ?></td>
+			<th>Boxleague</th>
+			<td><?php echo $boxleague->bl_name; ?></td>
 		</tr>
 
 		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_MATCH_BOX_ID'); ?></th>
-			<td><?php echo $this->item->box_id; ?></td>
+			<th>Box</th>
+            <td><?php echo $box->bx_name; ?></td>
 		</tr>
 
 		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_PLAYER'); ?></th>
-			<td><?php echo $this->item->home_player; ?></td>
+			<th>Home Player</th>
+			<td><?php echo $home_user->name; ?></td>
 		</tr>
 
 		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_PLAYER'); ?></th>
-			<td><?php echo $this->item->away_player; ?></td>
+            <th>Away Player</th>
+            <td><?php echo $away_user->name; ?></td>
 		</tr>
 
 		<tr>
@@ -56,9 +79,8 @@ if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'
 
 </div>
 
-<?php if($canEdit && $this->item->checked_out == 0): ?>
-
-	<a class="btn" href="<?php echo JRoute::_('index.php?option=com_boxleague&task=match.edit&id='.$this->item->id); ?>"><?php echo JText::_("COM_BOXLEAGUE_EDIT_ITEM"); ?></a>
+<?php if($canEdit /*&& $this->item->checked_out == 0*/): ?>
+	<a style="margin-bottom:10px" class="btn" href="<?php echo JRoute::_('index.php?option=com_boxleague&task=match.edit&id='.$this->item->id); ?>"><?php echo JText::_("COM_BOXLEAGUE_EDIT_ITEM"); ?></a>
 
 <?php endif; ?>
 
