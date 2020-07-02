@@ -72,7 +72,8 @@ class BoxleagueRouter extends RouterView
 		else
 		{
 			JLoader::register('BoxleagueRulesLegacy', __DIR__ . '/helpers/legacyrouter.php');
-			JLoader::register('BoxleagueHelpersBoxleague', __DIR__ . '/helpers/boxleague.php');
+            JLoader::register('BoxleagueHelpersBoxleague', __DIR__ . '/helpers/boxleague.php');
+            JLoader::register('BoxleagueCustomHelper', __DIR__ . '/helpers/customhelper.php');
 			$this->attachRule(new BoxleagueRulesLegacy($this));
 		}
 	}
