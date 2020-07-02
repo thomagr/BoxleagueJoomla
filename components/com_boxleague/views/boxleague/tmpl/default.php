@@ -19,35 +19,32 @@ if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'
 
 <div class="item_fields">
 
-	<table class="table">
-		
+<!--	<table class="table">-->
+<!--		-->
+<!---->
+<!--		<tr>-->
+<!--			<th>--><?php //echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_ID'); ?><!--</th>-->
+<!--			<td>--><?php //echo $this->item->id; ?><!--</td>-->
+<!--		</tr>-->
+<!---->
+<!--		<tr>-->
+<!--			<th>--><?php //echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_NAME'); ?><!--</th>-->
+<!--			<td>--><?php //echo $this->item->bl_name; ?><!--</td>-->
+<!--		</tr>-->
+<!---->
+<!--		<tr>-->
+<!--			<th>--><?php //echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_START_DATE'); ?><!--</th>-->
+<!--			<td>--><?php //echo $this->item->bl_start_date; ?><!--</td>-->
+<!--		</tr>-->
+<!---->
+<!--		<tr>-->
+<!--			<th>--><?php //echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_END_DATE'); ?><!--</th>-->
+<!--			<td>--><?php //echo $this->item->bl_end_date; ?><!--</td>-->
+<!--		</tr>-->
+<!---->
+<!--	</table>-->
 
-		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_ID'); ?></th>
-			<td><?php echo $this->item->id; ?></td>
-		</tr>
-
-		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_NAME'); ?></th>
-			<td><?php echo $this->item->bl_name; ?></td>
-		</tr>
-
-		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_START_DATE'); ?></th>
-			<td><?php echo $this->item->bl_start_date; ?></td>
-		</tr>
-
-		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_END_DATE'); ?></th>
-			<td><?php echo $this->item->bl_end_date; ?></td>
-		</tr>
-
-		<tr>
-			<th><?php echo JText::_('COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_ARCHIVE'); ?></th>
-			<td><?php echo $this->item->bl_archive; ?></td>
-		</tr>
-
-	</table>
+    <?php BoxleagueCustomHelper::printBoxleague($this->item->id); ?>
 
 </div>
 
