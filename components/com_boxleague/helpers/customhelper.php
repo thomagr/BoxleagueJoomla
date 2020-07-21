@@ -241,7 +241,7 @@ class BoxleagueCustomHelper
         $result = $db->loadObjectList();
 
         // create table
-        echo "<div style=overflow-y:scroll;>";
+        echo "<div>"; // style=overflow-y:scroll;>";
         echo "<table style='width:100%' class='table table-bordered table-condensed'>";
 
         // create the header row
@@ -261,14 +261,14 @@ class BoxleagueCustomHelper
         foreach ($result as $row) {
             $runningTotal = 0;
             echo "<tr>";
-            echo "<th style='color:white;background:#8445df;text-align:center;vertical-align: middle'>$count</th>";
+            echo "<th style='color:white;background:#8445df;'>$count</th>";
             $count++;
 
             // add strong
             if($user->id == $row->user_id) {
-                echo "<td><strong>$row->name</strong></td>";
+                echo "<td style='text-align:left;'><strong>$row->name</strong></td>";
             } else {
-                echo "<td>$row->name</td>";
+                echo "<td style='text-align:left;'>$row->name</td>";
             }
 
             // create the row cells
@@ -283,12 +283,12 @@ class BoxleagueCustomHelper
                     $addlink = $user->id == $row->user_id;
 
                     if($addlink) {
-                        echo "<td style='text-align:center;vertical-align: middle;background:#ffffee'>";
+                        echo "<td style='background:#ffffee;font-weight: bold;'>";
                         echo "<a style='display:block;' href='" . "/index.php/matches/match/edit/";
                         echo $matchScore['id'];
                         echo "'>";
                     } else {
-                        echo "<td style='text-align:center;vertical-align: middle;'>";
+                        echo "<td>";
                     }
 
                     if($matchScore['score'] == 0){
@@ -311,7 +311,7 @@ class BoxleagueCustomHelper
             if($playerScore == 0){
                 echo "<td></td>";
             } else {
-                echo "<td style='text-align:center;vertical-align: middle'><strong>$playerScore</strong></td>";
+                echo "<td><strong>$playerScore</strong></td>";
             }
             echo "<tr>";
         }
