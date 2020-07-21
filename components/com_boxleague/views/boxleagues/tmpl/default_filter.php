@@ -74,48 +74,47 @@ $formSelector = !empty($data['options']['formSelector']) ? $data['options']['for
 HTMLHelper::_('searchtools.form', $formSelector, $data['options']);
 ?>
 
-<div class="js-stools clearfix">
-	<div class="clearfix">
-		<div class="js-stools-container-bar">
-			<label for="filter_search" class="element-invisible"
-				aria-invalid="false"><?php echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_SUBMIT'); ?></label>
-
-			<div class="btn-wrapper input-append">
-				<?php echo $search_filter->input; ?>
-				<button type="submit" class="btn hasTooltip" title=""
-					data-original-title="<?php echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_SUBMIT'); ?>">
-					<i class="icon-search"></i>
-				</button>
-			</div>
-			<?php if ($filters): ?>
-				<div class="btn-wrapper hidden-phone">
-					<button type="button" class="btn hasTooltip js-stools-btn-filter" title=""
-						data-original-title="<?php echo Text::_('COM_BOXLEAGUE_SEARCH_TOOLS_DESC'); ?>">
-						<?php echo Text::_('COM_BOXLEAGUE_SEARCH_TOOLS'); ?> <i class="caret"></i>
-					</button>
-				</div>
-			<?php endif; ?>
-
-			<div class="btn-wrapper">
-				<button type="button" class="btn hasTooltip js-stools-btn-clear" title=""
-					data-original-title="<?php echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_CLEAR'); ?>"
-					onclick="jQuery(this).closest('form').find('input').val('');">
-					<?php echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_CLEAR'); ?>
-				</button>
-			</div>
-		</div>
-	</div>
-	<!-- Filters div -->
-	<div class="js-stools-container-filters hidden-phone clearfix" style="">
-		<?php // Load the form filters ?>
-		<?php if ($filters) : ?>
-			<?php foreach ($filters as $fieldName => $field) : ?>
-				<?php if ($fieldName != 'filter_search') : ?>
-					<div class="js-stools-field-filter">
-						<?php echo $field->renderField(array('hiddenLabel' => true)); ?>
-					</div>
-				<?php endif; ?>
-			<?php endforeach; ?>
-		<?php endif; ?>
-	</div>
-</div>
+<!--<div class="js-stools clearfix">-->
+<!--	<div class="clearfix">-->
+<!--		<div class="js-stools-container-bar">-->
+<!--			<label for="filter_search" class="element-invisible"-->
+<!--				aria-invalid="false">--><?php //echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_SUBMIT'); ?><!--</label>-->
+<!---->
+<!--			<div class="btn-wrapper input-append">-->
+<!--				--><?php //echo $search_filter->input; ?>
+<!--				<button type="submit" class="btn hasTooltip" title=""-->
+<!--					data-original-title="--><?php //echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_SUBMIT'); ?><!--">-->
+<!--					<i class="icon-search"></i>-->
+<!--				</button>-->
+<!--			</div>-->
+<!--			--><?php //if ($filters): ?>
+<!--				<div class="btn-wrapper hidden-phone">-->
+<!--					<button type="button" class="btn hasTooltip js-stools-btn-filter" title=""-->
+<!--						data-original-title="--><?php //echo Text::_('COM_BOXLEAGUE_SEARCH_TOOLS_DESC'); ?><!--">-->
+<!--						--><?php //echo Text::_('COM_BOXLEAGUE_SEARCH_TOOLS'); ?><!-- <i class="caret"></i>-->
+<!--					</button>-->
+<!--				</div>-->
+<!--			--><?php //endif; ?>
+<!---->
+<!--			<div class="btn-wrapper">-->
+<!--				<button type="button" class="btn hasTooltip js-stools-btn-clear" title=""-->
+<!--					data-original-title="--><?php //echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_CLEAR'); ?><!--"-->
+<!--					onclick="jQuery(this).closest('form').find('input').val('');">-->
+<!--					--><?php //echo Text::_('COM_BOXLEAGUE_SEARCH_FILTER_CLEAR'); ?>
+<!--				</button>-->
+<!--			</div>-->
+<!--		</div>-->
+<!--	</div>-->
+<!--	<div class="js-stools-container-filters hidden-phone clearfix" style="">-->
+<!--		--><?php //// Load the form filters ?>
+<!--		--><?php //if ($filters) : ?>
+<!--			--><?php //foreach ($filters as $fieldName => $field) : ?>
+<!--				--><?php //if ($fieldName != 'filter_search') : ?>
+<!--					<div class="js-stools-field-filter">-->
+<!--						--><?php //echo $field->renderField(array('hiddenLabel' => true)); ?>
+<!--					</div>-->
+<!--				--><?php //endif; ?>
+<!--			--><?php //endforeach; ?>
+<!--		--><?php //endif; ?>
+<!--	</div>-->
+<!--</div>-->

@@ -9,13 +9,16 @@
 // No direct access
 defined('_JEXEC') or die;
 
+$user = JFactory::getUser();
 $canEdit = JFactory::getUser()->authorise('core.edit', 'com_boxleague');
-$canEdit = true;
 
-//if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'))
-//{
-//	$canEdit = JFactory::getUser()->id == $this->item->created_by;
-//}
+
+if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'))
+{
+	$canEdit = JFactory::getUser()->id == $this->item->created_by;
+}
+
+
     $match = BoxleagueCustomHelper::returnMatch($this->item->id);
     $box = BoxleagueCustomHelper::returnBox($match->box_id);
     $boxleague = BoxleagueCustomHelper::returnBox($box->boxleague_id);
@@ -24,20 +27,8 @@ $canEdit = true;
     $boxleague = BoxleagueCustomHelper::returnBoxleague($box->boxleague_id);
     $home_user = JFactory::getUser($home_player->user_id);
     $away_user = JFactory::getUser($away_player->user_id);
-//    echo "<br>Boxleague<br>";
-//    print_r($boxleague);
-//    echo "<br>Box<br>";
-//    print_r($box);
-//    echo "<br>Match<br>";
-//    print_r($match);
-//    echo "<br>Home Player<br>";
-//    print_r($home_player);
-//    echo "<br>Away Player<br>";
-//    print_r($away_player);
-//    echo "<br>Home User<br>";
-//    print_r($home_user);
-//    echo "<br>Away User<br>";
-//    print_r($away_user);
+
+    $canEdit = $canEdit || $home_player->user_id == $user->id || $away_player->user_id == $user->id;
 
 ?>
 
@@ -81,7 +72,8 @@ $canEdit = true;
 
 <?php if($canEdit /*&& $this->item->checked_out == 0*/): ?>
 	<a style="margin-bottom:10px" class="btn" href="<?php echo JRoute::_('index.php?option=com_boxleague&task=match.edit&id='.$this->item->id); ?>"><?php echo JText::_("COM_BOXLEAGUE_EDIT_ITEM"); ?></a>
-
+<?php else: ?>
+    <a style="margin-bottom:10px" class="btn" href="<?php echo JRoute::_('index.php/boxleague'); ?>"><?php echo JText::_("Back"); ?></a>
 <?php endif; ?>
 
 <?php if (JFactory::getUser()->authorise('core.delete','com_boxleague.match.'.$this->item->id)) : ?>

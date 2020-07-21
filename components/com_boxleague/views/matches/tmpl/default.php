@@ -31,6 +31,7 @@ $canDelete = $user->authorise('core.delete', 'com_boxleague');
 // Import CSS
 $document = Factory::getDocument();
 $document->addStyleSheet(Uri::root() . 'media/com_boxleague/css/list.css');
+
 ?>
 
 <form action="<?php echo htmlspecialchars(Uri::getInstance()->toString()); ?>" method="post"

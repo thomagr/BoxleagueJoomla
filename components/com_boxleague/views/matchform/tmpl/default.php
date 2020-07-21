@@ -36,6 +36,15 @@ $boxleague = BoxleagueCustomHelper::returnBoxleague($box->boxleague_id);
 $home_user = JFactory::getUser($home_player->user_id);
 $away_user = JFactory::getUser($away_player->user_id);
 
+echo $canEdit . "<br>";
+echo $user->id  . "<br>";
+echo $home_player->user_id  . "<br>";
+echo $away_player->user_id . "<br>";
+
+$canEdit = $canEdit || $home_player->user_id == $user->id || $away_player->user_id == $user->id;
+
+echo $canEdit . "<br>";
+
 ?>
 
 <div class="match-edit front-end-edit">

@@ -98,7 +98,6 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
             {
                 $user = Factory::getUser();
                 $id   = $table->id;
-                
 
                 $canEdit = $user->authorise('core.edit', 'com_boxleague') || $user->authorise('core.create', 'com_boxleague');
 
@@ -106,6 +105,12 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
                 {
                         $canEdit = $user->id == $table->created_by;
                 }
+
+                $match = BoxleagueCustomHelper::returnMatch($id);
+                $home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
+                $away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
+
+                $canEdit = $canEdit || $home_player->user_id == $user->id || $away_player->user_id == $user->id;
 
                 if (!$canEdit)
                 {
@@ -124,8 +129,6 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
                 // Convert the JTable to a clean JObject.
                 $properties = $table->getProperties(1);
                 $this->item = ArrayHelper::toObject($properties, 'JObject');
-                
-
                 
             }
         }
@@ -313,7 +316,6 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
         $state = (!empty($data['state'])) ? 1 : 0;
         $user  = Factory::getUser();
 
-        
         if ($id)
         {
             // Check the user can edit this item
@@ -324,6 +326,12 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
             // Check the user can create new items in this section
             $authorised = $user->authorise('core.create', 'com_boxleague');
         }
+
+        $match = BoxleagueCustomHelper::returnMatch($id);
+        $home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
+        $away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
+
+        $authorised = $authorised || $home_player == $user->id || $away_player == $user->id;
 
         if ($authorised !== true)
         {
