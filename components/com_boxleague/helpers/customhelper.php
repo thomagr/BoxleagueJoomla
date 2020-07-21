@@ -205,20 +205,28 @@ class BoxleagueCustomHelper
         $db->setQuery($query);
         // fetch result as an object list
         $result = $db->loadObjectList();
-        $score = 0;
+
+        // return array of results
+        $ret = array();
         foreach ($result as $row) {
             if ($row->home_player == $player_row && $row->away_player == $player_column) {
-                return $row->home_score;
+                $ret['score'] = $row->home_score;
+                $ret['id'] = $row->id;
+                return $ret;
             }
-            if ($row->away_player == $player_row && $row->home_player == $player_column) {
-                return $row->away_score;
+            elseif ($row->away_player == $player_row && $row->home_player == $player_column) {
+                $ret['score'] = $row->away_score;
+                $ret['id'] = $row->id;
+                return $ret;
             }
         }
-        return 0;
+        return $ret;
     }
 
     public static function printScoreBoard($box_id, $bx_name)
     {
+        $user = JFactory::getUser();
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -231,55 +239,84 @@ class BoxleagueCustomHelper
         $db->setQuery($query);
         // fetch result as an object list
         $result = $db->loadObjectList();
+
+        // create table
+        echo "<div style=overflow-y:scroll;>";
         echo "<table style='width:100%' class='table table-bordered table-condensed'>";
-        // created the header row
-        // st albans colours purple #6b57a5 and green #4db848
+
+        // create the header row
         echo "<tr>";
-        echo "<th style='color:white;background:#8445df;width:8px'>$nbsp</th>";
-        echo "<th style='color:white;background:#8445df;width:25%'>$bx_name</th>";
+        echo "<th style='color:white;background:#8445df;width:10px'>$nbsp</th>";
+        echo "<th style='color:white;background:#8445df;width:150px'>$bx_name</th>";
         $count = 1;
         foreach ($result as $row) {
-//            echo "<th>$row->name</th>";
-            echo "<th style='color:white;background:#8445df;text-align:center;min-width:15px'>$count</th>";
+            echo "<th style='color:white;background:#8445df;text-align:center;width:30px'>$count</th>";
             $count++;
         }
-        echo "<th style='color:white;background:#8445df;;width:20px'>$nbsp</th>";
+        echo "<th style='color:white;background:#8445df;width:30px'>$nbsp</th>";
         echo "<tr>";
 
-        $count = 0;
         // create the table rows
+        $count = 1;
         foreach ($result as $row) {
+            $runningTotal = 0;
             echo "<tr>";
-            echo "<td style='color:white;background:#8445df;'><strong>$count</strong></td>";
+            echo "<th style='color:white;background:#8445df;text-align:center;vertical-align: middle'>$count</th>";
             $count++;
-            echo "<td><strong>$row->name</strong></td>";
+
+            // add strong
+            if($user->id == $row->user_id) {
+                echo "<td><strong>$row->name</strong></td>";
+            } else {
+                echo "<td>$row->name</td>";
+            }
+
+            // create the row cells
             foreach ($result as $column){
                 if($row->name == $column->name){
                     echo "<td style='background:#4db748'>&nbsp</td>";
                 }
                 else {
-                    //echo "<td>$column->name</td>";
                     $matchScore = BoxleagueCustomHelper::returnMatchScore($box_id, $row->id, $column->id);
-                    $match_id = BoxleagueCustomHelper::returnMatchId($box_id, $row->id, $column->id);
-                    echo "<td style='text-align: center'>";
-                    echo "<a style='display:block;' href='" . "/index.php/matches/match/" . $match_id . "'>";
-                    if($matchScore == 0){
-                        echo "&nbsp";
+                    $runningTotal += $matchScore['score'];
+
+                    $addlink = $user->id == $row->user_id;
+
+                    if($addlink) {
+                        echo "<td style='text-align:center;vertical-align: middle;background:#ffffee'>";
+                        echo "<a style='display:block;' href='" . "/index.php/matches/match/edit/";
+                        echo $matchScore['id'];
+                        echo "'>";
                     } else {
-                        echo "$matchScore";
+                        echo "<td style='text-align:center;vertical-align: middle;'>";
                     }
-                    echo "</a></td>";
+
+                    if($matchScore['score'] == 0){
+                        echo "&nbsp;";
+                    } else {
+                        echo $matchScore['score'];
+                    }
+
+                    if($addlink) {
+                        echo "</a></td>";
+                    } else {
+                        echo "</td>";
+                    }
                 }
+                // remove strong
+                if($user->id == $row->user_id)
+                    echo "</strong>";
             }
-            $playerScore = BoxleagueCustomHelper::returnPlayerBoxScore($box_id, $row->id);
+            $playerScore = $runningTotal;
             if($playerScore == 0){
                 echo "<td></td>";
             } else {
-                echo "<td style='text-align: center'><strong>$playerScore</strong></td>";
+                echo "<td style='text-align:center;vertical-align: middle'><strong>$playerScore</strong></td>";
             }
             echo "<tr>";
         }
         echo "</table>";
+        echo "</div>";
     }
 
     public static function printPlayers($box_id)
@@ -327,16 +364,6 @@ class BoxleagueCustomHelper
         // fetch result as an object list
         $result = $db->loadObjectList();
         foreach ($result as $row) {
-//            echo "<div class='col-sm-5'>";
-//            echo "<div class='panel panel-default'>";
-//            echo "<div class='panel-heading'>";
-//            echo "<h2 class='panel-title'>$row->bx_name</h2>";
-//            echo "</div>";
-//            echo "<div class='panel-body'>";
-//            BoxleagueCustomHelper::printPlayers($row->id);
-//            echo "</div>";
-//            echo "</div>";
-//            echo "</div>";
             BoxleagueCustomHelper::printScoreBoard($row->id, $row->bx_name);
         }
     }
@@ -356,9 +383,7 @@ class BoxleagueCustomHelper
         // fetch result as an object list
         $result = $db->loadObjectList();
         foreach ($result as $row) {
-            //echo "<a href='" . JRoute::_('index.php/boxes/box/' . $row->id) . "'>";
             BoxleagueCustomHelper::printBox($row->id);
-            //echo "</a>";
         }
     }
 
@@ -377,13 +402,9 @@ class BoxleagueCustomHelper
         $result = $db->loadObjectList();
         foreach ($result as $row) {
             echo "<h3> $row->bl_name </h3>";
-            //JHtml::_('date', $item->publish_up, JText::_('DATE_FORMAT_LC3'))
-            //JHtml::_('date', $item->publish_up, JText::_('DATE_FORMAT_LC3'))
-            echo "<h4>";
             echo HtmlHelper::date($row->bl_start_date, Text::_('DATE_FORMAT_LC3'));
             echo " - ";
             echo HtmlHelper::date($row->bl_end_date, Text::_('DATE_FORMAT_LC3'));
-            echo "</h3>";
 
             BoxleagueCustomHelper::printBoxes($row->id);
         }
