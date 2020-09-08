@@ -25,25 +25,17 @@ $lang->load('com_boxleague', JPATH_SITE);
 $doc = Factory::getDocument();
 $doc->addScript(Uri::base() . '/media/com_boxleague/js/form.js');
 $user = Factory::getUser();
-$canEdit = BoxleagueHelpersBoxleague::canUserEdit($this->item, $user);
 
-$match = BoxleagueCustomHelper::returnMatch($this->item->id);
-$box = BoxleagueCustomHelper::returnBox($match->box_id);
-$boxleague = BoxleagueCustomHelper::returnBox($box->boxleague_id);
-$home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
-$away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
-$boxleague = BoxleagueCustomHelper::returnBoxleague($box->boxleague_id);
-$home_user = JFactory::getUser($home_player->user_id);
-$away_user = JFactory::getUser($away_player->user_id);
+$match = BoxleagueCustomHelper::getMatchById($this->item->id);
+$box = BoxleagueCustomHelper::getBoxById($match->box_id);
+$boxleague = BoxleagueCustomHelper::getBoxleagueById($box->boxleague_id);
+$home_player = BoxleagueCustomHelper::getPlayerById($match->home_player);
+$away_player = BoxleagueCustomHelper::getPlayerById($match->away_player);
 
-echo $canEdit . "<br>";
-echo $user->id  . "<br>";
-echo $home_player->user_id  . "<br>";
-echo $away_player->user_id . "<br>";
+$home_user   = JFactory::getUser($home_player->user_id);
+$away_user   = JFactory::getUser($away_player->user_id);
 
-$canEdit = $canEdit || $home_player->user_id == $user->id || $away_player->user_id == $user->id;
-
-echo $canEdit . "<br>";
+$canEdit = BoxleagueCustomHelper::canUserEdit($match, $user);
 
 ?>
 
@@ -54,7 +46,8 @@ echo $canEdit . "<br>";
         </h3>
     <?php else : ?>
         <?php if (!empty($this->item->id)): ?>
-            <h1><?php echo $box->bx_name; ?></h1>
+            <h1><?php echo $boxleague->bl_name; ?></h1>
+            <h2><?php echo $box->bx_name; ?></h2>
             <div class="form-horizontal">
                 <div class="control-group">
                     <div class="control-label">Home Player</div>

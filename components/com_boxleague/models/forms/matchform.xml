@@ -14,8 +14,52 @@
     <field name="box_id" type="hidden" label="COM_BOXLEAGUE_FORM_LBL_MATCH_BOX_ID" description="COM_BOXLEAGUE_FORM_DESC_MATCH_BOX_ID" class="inputbox" input_type="list" table="#__boxleague_box" key_field="id" value_multiple="1" value_field_multiple="boxleague_id,bx_name" value_field="fk_value" separator=" - " required="true" message="A parent box must be selected" default=""/>
     <field name="home_player" type="hidden" label="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_PLAYER" description="COM_BOXLEAGUE_FORM_DESC_MATCH_HOME_PLAYER" class="inputbox" input_type="list" table="#__boxleague_player" key_field="id" value_multiple="1" value_field_multiple="id,box_id,user_id" value_field="fk_value" separator=" - " required="true" message="Home player must be selected" default=""/>
     <field name="away_player" type="hidden" label="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_PLAYER" description="COM_BOXLEAGUE_FORM_DESC_MATCH_AWAY_PLAYER" class="inputbox" input_type="list" table="#__boxleague_player" key_field="id" value_multiple="1" value_field_multiple="id,box_id,user_id" value_field="fk_value" separator=" - " required="true" message="Away player must be selected" default=""/>
-    <field name="home_score" filter="safehtml" min="0" type="number" required="true" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_SCORE" description="COM_BOXLEAGUE_FORM_DESC_MATCH_HOME_SCORE" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_SCORE"/>
-    <field name="away_score" filter="safehtml" min="0" type="number" required="true" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_SCORE" description="COM_BOXLEAGUE_FORM_DESC_MATCH_AWAY_SCORE" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_SCORE"/>
+    <field name="home_score" filter="safehtml" min="0" type="list" required="true" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_SCORE" description="COM_BOXLEAGUE_FORM_DESC_MATCH_HOME_SCORE" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_SCORE">
+      <option value="-2">Injured</option>
+      <option value="-1">Walkover</option>
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+    </field>
+    <field name="away_score" filter="safehtml" min="0" type="list" required="true" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_SCORE" description="COM_BOXLEAGUE_FORM_DESC_MATCH_AWAY_SCORE" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_SCORE">
+      <option value="-2">Injured</option>
+      <option value="-1">Walkover</option>
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+      <option value="16">16</option>
+      <option value="17">17</option>
+      <option value="18">18</option>
+    </field>
     <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
   </fieldset>
 </form>

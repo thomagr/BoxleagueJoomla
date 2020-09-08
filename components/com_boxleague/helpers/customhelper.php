@@ -24,6 +24,8 @@ class BoxleagueCustomHelper
 {
     public static function countMatches($box_id)
     {
+        JLog::add('countMatches() ' . $box_id, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -39,6 +41,8 @@ class BoxleagueCustomHelper
 
     public static function countPlayers($box_id)
     {
+        JLog::add('countPlayers() ' . $box_id, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -54,6 +58,8 @@ class BoxleagueCustomHelper
 
     public static function getPlayersFromBox($box_id)
     {
+        JLog::add('getPlayersFromBox() ' . $box_id, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -69,6 +75,8 @@ class BoxleagueCustomHelper
 
     public static function addMatches($box_id, $player_id, $players, $values)
     {
+        JLog::add('addMatches() ' . $box_id . " " . $player_id, JLog::DEBUG, 'my-error-category');
+
         $user = Factory::getUser();
 
         foreach ($players as $player) {
@@ -79,10 +87,13 @@ class BoxleagueCustomHelper
 
     public static function buildMatches($box_id)
     {
+        JLog::add('buildMatches() ' . $box_id, JLog::DEBUG, 'my-error-category');
+
         $matches = BoxleagueCustomHelper::countMatches($box_id);
         if ($matches > 0) {
             return;
         }
+
         $players = BoxleagueCustomHelper::getPlayersFromBox($box_id);
         // Get a database object
         $db = JFactory::getDbo();
@@ -104,8 +115,10 @@ class BoxleagueCustomHelper
         $db->query();
     }
 
-    public static function returnPlayerBoxScore($box_id, $player_id)
+    public static function calculatePlayerBoxScore($box_id, $player_id)
     {
+        JLog::add('calculatePlayerBoxScore() ' . $box_id . " " . $player_id, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -130,7 +143,7 @@ class BoxleagueCustomHelper
         return $score;
     }
 
-    public static function returnDbObject($id, $db_name)
+    public static function getTableContentById($id, $db_name)
     {
         // Get a database object
         $db = JFactory::getDbo();
@@ -147,28 +160,51 @@ class BoxleagueCustomHelper
         return null;
     }
 
-    public static function returnBoxleague($id)
+    public static function getBoxleagueById($id)
     {
-        return BoxleagueCustomHelper::returnDbObject($id, "boxleague");
+        return BoxleagueCustomHelper::getTableContentById($id, "boxleague");
     }
 
-    public static function returnBox($id)
+    public static function getBoxById($id)
     {
-        return BoxleagueCustomHelper::returnDbObject($id, "box");
+        return BoxleagueCustomHelper::getTableContentById($id, "box");
     }
 
-    public static function returnPlayer($id)
+    public static function getPlayerById($id)
     {
-        return BoxleagueCustomHelper::returnDbObject($id, "player");
+        return BoxleagueCustomHelper::getTableContentById($id, "player");
     }
 
-    public static function returnMatch($id)
+    public static function getMatchById($id)
     {
-        return BoxleagueCustomHelper::returnDbObject($id, "match");
+        return BoxleagueCustomHelper::getTableContentById($id, "match");
     }
 
-    public static function returnMatchId($box_id, $player_row, $player_column)
+    public static function getCurrentBoxleagueId()
     {
+        JLog::add('getCurrentBoxleagueId() ' . $id, JLog::DEBUG, 'my-error-category');
+
+        // return the first unarchived boxleague
+        // Get a database object
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('id')
+            ->from('#__boxleague_boxleague')
+            ->where('bl_archive = 0')
+            ->order('id DESC')
+            ->setLimit('1');
+        // sets up a database query for later execution
+        $db->setQuery($query);
+        // fetch result as an object list
+        $id = $db->loadResult();
+
+        return $id;
+    }
+
+    public static function getMatchIdByPlayers($box_id, $player_row, $player_column)
+    {
+        JLog::add('getMatchIdByPlayers() ' . $box_id . " " . $player_row . " " . $player_column, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -192,40 +228,9 @@ class BoxleagueCustomHelper
         return null;
     }
 
-    public static function returnMatchScore($box_id, $player_row, $player_column)
+    public static function getPlayersInBox($box_id)
     {
-        // Get a database object
-        $db = JFactory::getDbo();
-        // Get all boxes for this boxleague
-        $query = $db->getQuery(true);
-        $query->select('*');
-        $query->from('#__boxleague_match');
-        $query->where($db->quoteName('box_id') . ' = ' . $box_id);
-        // sets up a database query for later execution
-        $db->setQuery($query);
-        // fetch result as an object list
-        $result = $db->loadObjectList();
-
-        // return array of results
-        $ret = array();
-        foreach ($result as $row) {
-            if ($row->home_player == $player_row && $row->away_player == $player_column) {
-                $ret['score'] = $row->home_score;
-                $ret['id'] = $row->id;
-                return $ret;
-            }
-            elseif ($row->away_player == $player_row && $row->home_player == $player_column) {
-                $ret['score'] = $row->away_score;
-                $ret['id'] = $row->id;
-                return $ret;
-            }
-        }
-        return $ret;
-    }
-
-    public static function printScoreBoard($box_id, $bx_name)
-    {
-        $user = JFactory::getUser();
+        JLog::add('getPlayersInBox() ' . $box_id, JLog::DEBUG, 'my-error-category');
 
         // Get a database object
         $db = JFactory::getDbo();
@@ -240,25 +245,83 @@ class BoxleagueCustomHelper
         // fetch result as an object list
         $result = $db->loadObjectList();
 
-        // create table
-        echo "<div>"; // style=overflow-y:scroll;>";
-        echo "<table style='width:100%' class='table table-bordered table-condensed'>";
+        return $result;
+    }
 
-        // create the header row
+    public static function getMatchesInBox($box_id)
+    {
+        JLog::add('getMatchesInBox() ' . $box_id, JLog::DEBUG, 'my-error-category');
+
+        // Get a database object
+        $db = JFactory::getDbo();
+        // Get all boxes for this boxleague
+        $query = $db->getQuery(true);
+        $query->select('*');
+        $query->from('#__boxleague_match');
+        $query->where($db->quoteName('box_id') . ' = ' . $box_id);
+        // sets up a database query for later execution
+        $db->setQuery($query);
+        // fetch result as an object list
+        $result = $db->loadObjectList();
+
+        return $result;
+    }
+
+    public static function getMatchScore($matches, $player_row, $player_column)
+    {
+        JLog::add('getMatchScore() ' . $player_row . " " . $player_column, JLog::DEBUG, 'my-error-category');
+
+        // return array of results
+        $ret = array();
+        foreach ($matches as $row) {
+            if ($row->home_player == $player_row && $row->away_player == $player_column) {
+                $ret['score'] = $row->home_score;
+                $ret['id'] = $row->id;
+                JLog::add('score ' . $ret['score'], JLog::DEBUG, 'my-error-category');
+                return $ret;
+            }
+            elseif ($row->away_player == $player_row && $row->home_player == $player_column) {
+                $ret['score'] = $row->away_score;
+                $ret['id'] = $row->id;
+                JLog::add('score ' . $ret['score'], JLog::DEBUG, 'my-error-category');
+                return $ret;
+            }
+        }
+        JLog::add('score none', JLog::DEBUG, 'my-error-category');
+        return $ret;
+    }
+
+    public static function printScoreBoard($box_id, $bx_name)
+    {
+        JLog::add('printScoreBoard() ' . $box_id . " " . $bx_name, JLog::DEBUG, 'my-error-category');
+
+        $user = JFactory::getUser();
+        $players = BoxleagueCustomHelper::getPlayersInBox($box_id);
+        $matches = BoxleagueCustomHelper::getMatchesInBox($box_id);
+
+        // create table and header rows
+
+        echo "<div>";
+        echo "<table style='' class='table table-bordered table-condensed table-responsive'>";
+
+        // create header rows
         echo "<tr>";
         echo "<th style='color:white;background:#8445df;width:10px'>$nbsp</th>";
         echo "<th style='color:white;background:#8445df;width:150px'>$bx_name</th>";
         $count = 1;
-        foreach ($result as $row) {
-            echo "<th style='color:white;background:#8445df;text-align:center;width:30px'>$count</th>";
+        foreach ($players as $row) {
+            echo "<th style='color:white;background:#8445df;text-align:center;width:20px'>$count</th>";
             $count++;
         }
-        echo "<th style='color:white;background:#8445df;width:30px'>$nbsp</th>";
+        for ($i = $count; $i <= 6; $i++) {
+            echo "<th style='color:white;background:#8445df;text-align:center;width:20px'>$nbsp</th>";
+        }
+        echo "<th style='color:white;background:#8445df;width:20px'>$nbsp</th>";
         echo "<tr>";
 
-        // create the table rows
+        // create body rows
         $count = 1;
-        foreach ($result as $row) {
+        foreach ($players as $row) {
             $runningTotal = 0;
             echo "<tr>";
             echo "<th style='color:white;background:#8445df;'>$count</th>";
@@ -272,12 +335,11 @@ class BoxleagueCustomHelper
             }
 
             // create the row cells
-            foreach ($result as $column){
+            foreach ($players as $column){
                 if($row->name == $column->name){
                     echo "<td style='background:#4db748'>&nbsp</td>";
-                }
-                else {
-                    $matchScore = BoxleagueCustomHelper::returnMatchScore($box_id, $row->id, $column->id);
+                } else {
+                    $matchScore = BoxleagueCustomHelper::getMatchScore($matches, $row->id, $column->id);
                     $runningTotal += $matchScore['score'];
 
                     $addlink = $user->id == $row->user_id;
@@ -307,6 +369,7 @@ class BoxleagueCustomHelper
                 if($user->id == $row->user_id)
                     echo "</strong>";
             }
+
             $playerScore = $runningTotal;
             if($playerScore == 0){
                 echo "<td></td>";
@@ -321,6 +384,8 @@ class BoxleagueCustomHelper
 
     public static function printPlayers($box_id)
     {
+        JLog::add('printPlayers() ' . $box_id . " " . $bx_name, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -339,7 +404,7 @@ class BoxleagueCustomHelper
             $count--;
             echo "<tr>";
             echo "<td>$row->name</td>";
-            $score = BoxleagueCustomHelper::returnPlayerBoxScore($box_id, $row->id);
+            $score = BoxleagueCustomHelper::calculatePlayerBoxScore($box_id, $row->id);
             echo "<td style='text-align:right'>$score</td>";
             echo "<tr>";
         }
@@ -350,15 +415,18 @@ class BoxleagueCustomHelper
         BoxleagueCustomHelper::buildMatches($box_id);
     }
 
-    public static function printBox($id)
+    public static function printBoxes($id)
     {
+        JLog::add('printBoxes() ' . $id, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
         $query = $db->getQuery(true);
         $query->select('*');
         $query->from('#__boxleague_box');
-        $query->where($db->quoteName('id') . ' = ' . $id);
+        $query->where($db->quoteName('boxleague_id') . ' = ' . $id);
+        $query->order('ordering ASC');
         // sets up a database query for later execution
         $db->setQuery($query);
         // fetch result as an object list
@@ -368,27 +436,10 @@ class BoxleagueCustomHelper
         }
     }
 
-    public static function printBoxes($boxleague_id)
-    {
-        // Get a database object
-        $db = JFactory::getDbo();
-        // Get all boxes for this boxleague
-        $query = $db->getQuery(true);
-        $query->select('*');
-        $query->from('#__boxleague_box');
-        $query->where($db->quoteName('boxleague_id') . ' = ' . $boxleague_id);
-        $query->order('ordering ASC');
-        // sets up a database query for later execution
-        $db->setQuery($query);
-        // fetch result as an object list
-        $result = $db->loadObjectList();
-        foreach ($result as $row) {
-            BoxleagueCustomHelper::printBox($row->id);
-        }
-    }
-
     public static function printBoxleague($id)
     {
+        JLog::add('printBoxleague() ' . $id . " " . $bx_name, JLog::DEBUG, 'my-error-category');
+
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -408,5 +459,19 @@ class BoxleagueCustomHelper
 
             BoxleagueCustomHelper::printBoxes($row->id);
         }
+    }
+
+    public static function canUserEdit($match, $user){
+        JLog::add('canUserEdit()', JLog::DEBUG, 'my-error-category');
+
+        $home_player = BoxleagueCustomHelper::getPlayerById($match->home_player);
+        $away_player = BoxleagueCustomHelper::getPlayerById($match->away_player);
+
+        $home_user   = JFactory::getUser($home_player->user_id);
+        $away_user   = JFactory::getUser($away_player->user_id);
+
+        $canEdit = $home_player->user_id == $user->id || $away_player->user_id == $user->id;
+
+        return $canEdit;
     }
 }

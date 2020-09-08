@@ -95,7 +95,10 @@ class BoxleagueModelBoxleague extends \Joomla\CMS\MVC\Model\ItemModel
 
                 if (empty($id))
                 {
-                    $id = $this->getState('boxleague.id');
+                    $current = BoxleagueCustomHelper::getCurrentBoxleagueId();
+
+                    $id = $this->getState('boxleague.id', $current);
+                    JLog::add('id ' . $id, JLog::DEBUG, 'my-error-category');
                 }
 
                 // Get a level row instance.

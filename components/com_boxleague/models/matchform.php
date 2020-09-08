@@ -99,18 +99,9 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
                 $user = Factory::getUser();
                 $id   = $table->id;
 
-                $canEdit = $user->authorise('core.edit', 'com_boxleague') || $user->authorise('core.create', 'com_boxleague');
+                $match = BoxleagueCustomHelper::getMatchById($id);
 
-                if (!$canEdit && $user->authorise('core.edit.own', 'com_boxleague'))
-                {
-                        $canEdit = $user->id == $table->created_by;
-                }
-
-                $match = BoxleagueCustomHelper::returnMatch($id);
-                $home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
-                $away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
-
-                $canEdit = $canEdit || $home_player->user_id == $user->id || $away_player->user_id == $user->id;
+                $canEdit = BoxleagueCustomHelper::canUserEdit($match, $user);
 
                 if (!$canEdit)
                 {
@@ -316,24 +307,10 @@ class BoxleagueModelMatchForm extends \Joomla\CMS\MVC\Model\FormModel
         $state = (!empty($data['state'])) ? 1 : 0;
         $user  = Factory::getUser();
 
-        if ($id)
-        {
-            // Check the user can edit this item
-            $authorised = $user->authorise('core.edit', 'com_boxleague') || $authorised = $user->authorise('core.edit.own', 'com_boxleague');
-        }
-        else
-        {
-            // Check the user can create new items in this section
-            $authorised = $user->authorise('core.create', 'com_boxleague');
-        }
+        $match = BoxleagueCustomHelper::getMatchById($id);
+        $canEdit = BoxleagueCustomHelper::canUserEdit($match, $user);
 
-        $match = BoxleagueCustomHelper::returnMatch($id);
-        $home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
-        $away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
-
-        $authorised = $authorised || $home_player == $user->id || $away_player == $user->id;
-
-        if ($authorised !== true)
+        if ($canEdit !== true)
         {
             throw new Exception(Text::_('JERROR_ALERTNOAUTHOR'), 403);
         }

@@ -10,25 +10,12 @@
 defined('_JEXEC') or die;
 
 $user = JFactory::getUser();
-$canEdit = JFactory::getUser()->authorise('core.edit', 'com_boxleague');
 
+$match = BoxleagueCustomHelper::getMatchById($this->item->id);
+$box = BoxleagueCustomHelper::getBoxById($match->box_id);
+$boxleague = BoxleagueCustomHelper::getBoxleagueById($box->boxleague_id);
 
-if (!$canEdit && JFactory::getUser()->authorise('core.edit.own', 'com_boxleague'))
-{
-	$canEdit = JFactory::getUser()->id == $this->item->created_by;
-}
-
-
-    $match = BoxleagueCustomHelper::returnMatch($this->item->id);
-    $box = BoxleagueCustomHelper::returnBox($match->box_id);
-    $boxleague = BoxleagueCustomHelper::returnBox($box->boxleague_id);
-    $home_player = BoxleagueCustomHelper::returnPlayer($match->home_player);
-    $away_player = BoxleagueCustomHelper::returnPlayer($match->away_player);
-    $boxleague = BoxleagueCustomHelper::returnBoxleague($box->boxleague_id);
-    $home_user = JFactory::getUser($home_player->user_id);
-    $away_user = JFactory::getUser($away_player->user_id);
-
-    $canEdit = $canEdit || $home_player->user_id == $user->id || $away_player->user_id == $user->id;
+$canEdit = BoxleagueCustomHelper::canUserEdit($match, $user);
 
 ?>
 
