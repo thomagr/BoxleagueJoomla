@@ -95,10 +95,18 @@ class BoxleagueModelBoxleague extends \Joomla\CMS\MVC\Model\ItemModel
 
                 if (empty($id))
                 {
-                    $current = BoxleagueCustomHelper::getCurrentBoxleagueId();
-
-                    $id = $this->getState('boxleague.id', $current);
-                    JLog::add('id ' . $id, JLog::DEBUG, 'my-error-category');
+                    // read the URL and check there isn't an ID in it
+                    $uri = JUri::getInstance();
+                    $url = $uri->toString();
+                    JLog::add('url ' . $url, JLog::DEBUG, 'my-error-category');
+                    if(preg_match("/\/(\d+)$/",$url,$matches)) {
+                        $id=$matches[1];
+                        JLog::add('url id ' . $id, JLog::DEBUG, 'my-error-category');
+                    }
+                    else {
+                        $id = BoxleagueCustomHelper::getCurrentBoxleagueId();
+                        JLog::add('current id ' . $current, JLog::DEBUG, 'my-error-category');
+                    }
                 }
 
                 // Get a level row instance.
@@ -107,8 +115,6 @@ class BoxleagueModelBoxleague extends \Joomla\CMS\MVC\Model\ItemModel
                 // Attempt to load the row.
                 if ($table->load($id))
                 {
-                    
-
                     // Check published state.
                     if ($published = $this->getState('filter.published'))
                     {
@@ -121,8 +127,6 @@ class BoxleagueModelBoxleague extends \Joomla\CMS\MVC\Model\ItemModel
                     // Convert the JTable to a clean JObject.
                     $properties  = $table->getProperties(1);
                     $this->_item = ArrayHelper::toObject($properties, 'JObject');
-
-                    
                 }
 
                 if (empty($this->_item))
@@ -130,8 +134,6 @@ class BoxleagueModelBoxleague extends \Joomla\CMS\MVC\Model\ItemModel
 					throw new Exception(Text::_('COM_BOXLEAGUE_ITEM_NOT_LOADED'), 404);
 				}
             }
-        
-            
 
 		if (isset($this->_item->created_by))
 		{

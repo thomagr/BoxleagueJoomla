@@ -182,8 +182,6 @@ class BoxleagueCustomHelper
 
     public static function getCurrentBoxleagueId()
     {
-        JLog::add('getCurrentBoxleagueId() ' . $id, JLog::DEBUG, 'my-error-category');
-
         // return the first unarchived boxleague
         // Get a database object
         $db = JFactory::getDbo();
@@ -197,6 +195,8 @@ class BoxleagueCustomHelper
         $db->setQuery($query);
         // fetch result as an object list
         $id = $db->loadResult();
+
+        JLog::add('getCurrentBoxleagueId() ' . $id, JLog::DEBUG, 'my-error-category');
 
         return $id;
     }
@@ -291,7 +291,7 @@ class BoxleagueCustomHelper
         return $ret;
     }
 
-    public static function printScoreBoard($box_id, $bx_name)
+    public static function printScoreBoard($box_id, $bx_name, $archive)
     {
         JLog::add('printScoreBoard() ' . $box_id . " " . $bx_name, JLog::DEBUG, 'my-error-category');
 
@@ -342,7 +342,8 @@ class BoxleagueCustomHelper
                     $matchScore = BoxleagueCustomHelper::getMatchScore($matches, $row->id, $column->id);
                     $runningTotal += $matchScore['score'];
 
-                    $addlink = $user->id == $row->user_id;
+                    // add link if user matches and boxleague is not archived
+                    $addlink = $user->id == $row->user_id && !$archive;
 
                     if($addlink) {
                         echo "<td style='background:#ffffee;font-weight: bold;'>";
@@ -415,7 +416,7 @@ class BoxleagueCustomHelper
         BoxleagueCustomHelper::buildMatches($box_id);
     }
 
-    public static function printBoxes($id)
+    public static function printBoxes($id, $archive)
     {
         JLog::add('printBoxes() ' . $id, JLog::DEBUG, 'my-error-category');
 
@@ -432,7 +433,7 @@ class BoxleagueCustomHelper
         // fetch result as an object list
         $result = $db->loadObjectList();
         foreach ($result as $row) {
-            BoxleagueCustomHelper::printScoreBoard($row->id, $row->bx_name);
+            BoxleagueCustomHelper::printScoreBoard($row->id, $row->bx_name, $archive);
         }
     }
 
@@ -457,7 +458,7 @@ class BoxleagueCustomHelper
             echo " - ";
             echo HtmlHelper::date($row->bl_end_date, Text::_('DATE_FORMAT_LC3'));
 
-            BoxleagueCustomHelper::printBoxes($row->id);
+            BoxleagueCustomHelper::printBoxes($row->id, $row->bl_archive);
         }
     }
 
