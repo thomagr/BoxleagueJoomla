@@ -130,7 +130,9 @@ class BoxleagueModelMatches extends \Joomla\CMS\MVC\Model\ListModel
 	 */
 	protected function getListQuery()
 	{
-            // Create a new query object.
+        JLog::add('matches->getListQuery()', JLog::DEBUG, 'my-error-category');
+
+        // Create a new query object.
             $db    = $this->getDbo();
             $query = $db->getQuery(true);
 
@@ -185,10 +187,7 @@ class BoxleagueModelMatches extends \Joomla\CMS\MVC\Model\ListModel
                     $search = $db->Quote('%' . $db->escape($search, true) . '%');
                 }
             }
-            
 
-            
-            
             // Add the list ordering clause.
             $orderCol  = $this->state->get('list.ordering', "a.id");
             $orderDirn = $this->state->get('list.direction', "ASC");
@@ -208,7 +207,11 @@ class BoxleagueModelMatches extends \Joomla\CMS\MVC\Model\ListModel
 	 */
 	public function getItems()
 	{
-		$items = parent::getItems();
+        JLog::add('matches->getItems()', JLog::DEBUG, 'my-error-category');
+
+        return null;
+
+        $items = parent::getItems();
 		
 		foreach ($items as $item)
 		{
@@ -309,7 +312,9 @@ class BoxleagueModelMatches extends \Joomla\CMS\MVC\Model\ListModel
 	 */
 	protected function loadFormData()
 	{
-		$app              = Factory::getApplication();
+        JLog::add('matches->loadFormData()', JLog::DEBUG, 'my-error-category');
+
+        $app              = Factory::getApplication();
 		$filters          = $app->getUserState($this->context . '.filter', array());
 		$error_dateformat = false;
 
