@@ -236,10 +236,12 @@ class BoxleagueCustomHelper
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
         $query = $db->getQuery(true);
-        $query->select('player.*, user.name');
+        $query->select('player.*, user.name, user.email, profile.profile_value as phone');
         $query->from('#__boxleague_player AS player');
         $query->join('LEFT', '#__users AS user ON user.id = user_id');
-        $query->where($db->quoteName('box_id') . ' = ' . $box_id);
+        $query->join('LEFT', '#__user_profiles AS profile ON user.id = profile.user_id');
+        $query->where($db->quoteName('box_id') . ' = ' . $box_id,
+            $db->quoteName('profile.key') . ' = ' . $db->quoteName('profile.phone'));
         // sets up a database query for later execution
         $db->setQuery($query);
         // fetch result as an object list
@@ -293,20 +295,35 @@ class BoxleagueCustomHelper
         return $ret;
     }
 
-    public static function printMatch($matches, $players, $player1, $player2){
+    public static function printMatchCell($userId, $player){
+        JLog::add('printMatchCell() ' . $userId . " " . $player->user_id, JLog::DEBUG, 'my-error-category');
+
+        // highlight user with <strong>
+        if($userId == $player->user_id){
+            echo "<td><strong>" . $player->name . "</strong></td>";
+        } else {
+            echo "<td>" . $player->name . "</td>";
+        }
+    }
+
+    public static function printMatch($userId, $matches, $players, $player1, $player2){
         JLog::add('printMatch() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
 
+        echo "<tr>";
         foreach ($matches as $match){
-            JLog::add('matches ' . $match->home_player . " " . $player1->id, JLog::DEBUG, 'my-error-category');
-
             if($match->home_player == $player1->id && $match->away_player == $player2->id){
-                echo $player1->name . " vs " . $player2->name . " <br>";
+                BoxleagueCustomHelper::printMatchCell($userId, $player1);
+                echo "<td>vs</td>";
+                BoxleagueCustomHelper::printMatchCell($userId, $player2);
             }
 
-            if($match->home_player == $player2->id && $match->away_player == $player1->id){
-                echo $player1->name . " vs " . $player2->name . " <br>";
+            if($match->home_player == $player2->id && $match->away_player == $player1->id) {
+                BoxleagueCustomHelper::printMatchCell($userId, $player1);
+                echo "<td>vs</td>";
+                BoxleagueCustomHelper::printMatchCell($userId, $player2);
             }
         }
+        echo "</tr>";
     }
 
     public static function printMatches($userId)
@@ -338,27 +355,49 @@ class BoxleagueCustomHelper
             // see if player matches user id
             foreach ($players as $player) {
                 if($player->user_id == $userId){
-                    echo "<h4>Week 1</h4>";
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[2]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[4]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[3], $players[5]);
-                    echo "<h4>Week 2</h4>";
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[4]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[5]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[2], $players[3]);
-                    echo "<h4>Week 3</h4>";
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[5]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[3]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[2], $players[4]);
-                    echo "<h4>Week 4</h4>";
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[3]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[2]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[4], $players[5]);
-                    echo "<h4>Week 5</h4>";
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[1]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[3], $players[4]);
-                    BoxleagueCustomHelper::printMatch($matches, $players, $players[5], $players[2]);
-                    echo "<h4>Week 5</h4>Spare";
+                    // print out the contact details
+                    echo "<table class='table table-condensed table-responsive'>";
+                    echo "<tr'><td style='border: 0;' colspan='2'><h5>Contact Details</h5><p>";
+                    echo "Details can be changed using ";
+                    echo "<a href='/index.php/my-account'>My Account</a>";
+                    echo "</td></tr>";
+                    foreach ($players as $contact) {
+                        echo "<tr>";
+                        echo "<td style='text-align:left'>" . $contact->name . "</td>";
+                        echo "<td style='text-align:left'>" . $contact->email . "</td>";
+                        echo "<td style='text-align:left'>" . str_replace("\"","",$contact->phone) . "</td>";
+                        echo "</tr>";
+                    }
+                    echo "</table>";
+
+                    // print out the matches
+                    echo "<table style='border: none' class='table table-condensed table-responsive'>";
+                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 1</h5></td></tr>";
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[2]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[4]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[3], $players[5]);
+                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 2</h5></td></tr>";
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[4]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[5]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[2], $players[3]);
+                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 3</h5></td></tr>";
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[5]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[3]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[2], $players[4]);
+                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 4</h5></td></tr>";
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[3]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[2]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[4], $players[5]);
+                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 5</h5></td></tr>";
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[1]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[3], $players[4]);
+                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[5], $players[2]);
+                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 6</h5></td></tr>";
+                    echo "<tr><td colspan='3'>Spare</td></tr>";
+                    echo "</table>";
+
+                    // exit this function
+                    return;
                 }
             }
         }
