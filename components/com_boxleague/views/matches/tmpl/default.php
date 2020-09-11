@@ -37,7 +37,7 @@ $userID = JFactory::getUser()->id;
 
 <div class="item_fields">
 
-    <?php BoxleagueCustomHelper::printMatches($userId); ?>
+    <?php BoxleagueCustomHelper::printMatches(); ?>
 
 </div>
 

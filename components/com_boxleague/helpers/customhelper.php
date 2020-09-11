@@ -80,7 +80,7 @@ class BoxleagueCustomHelper
         $user = Factory::getUser();
 
         foreach ($players as $player) {
-            $values[] = "'', '$box_id', '$player_id', '0', '$player->id', '0', '0', '1', '0', '0000-00-00 00:00:00', '$user->id', '$user->id'";
+            $values[] = "'', '$box_id', '$player_id', null, '$player->id', null, '0', '1', '0', null, '$user->id', '$user->id'";
         }
         return $values;
     }
@@ -228,6 +228,26 @@ class BoxleagueCustomHelper
         return null;
     }
 
+    public static function getBoxesInBoxleague($boxleague_id)
+    {
+        JLog::add('getBoxesInBoxleague() ' . $boxleague_id, JLog::DEBUG, 'my-error-category');
+
+        // Get a database object
+        $db = JFactory::getDbo();
+        // Get all boxes for this boxleague
+        $query = $db->getQuery(true);
+        $query->select('*');
+        $query->from('#__boxleague_box');
+        $query->where($db->quoteName('boxleague_id') . ' = ' . $boxleague_id);
+        $query->order('ordering ASC');
+        // sets up a database query for later execution
+        $db->setQuery($query);
+        // fetch result as an object list
+        $result = $db->loadObjectList();
+
+        return $result;
+    }
+
     public static function getPlayersInBox($box_id)
     {
         JLog::add('getPlayersInBox() ' . $box_id, JLog::DEBUG, 'my-error-category');
@@ -271,100 +291,103 @@ class BoxleagueCustomHelper
         return $result;
     }
 
-    public static function getMatchScore($matches, $player_row, $player_column)
+    public static function getMatchScore($matches, $player1, $player2)
     {
-        JLog::add('getMatchScore() ' . $player_row . " " . $player_column, JLog::DEBUG, 'my-error-category');
+        JLog::add('getMatchScore() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
 
-        // return array of results
+        // return array of results [score, match_id]
         $ret = array();
-        foreach ($matches as $row) {
-            if ($row->home_player == $player_row && $row->away_player == $player_column) {
-                $ret['score'] = $row->home_score;
-                $ret['id'] = $row->id;
-                JLog::add('score ' . $ret['score'], JLog::DEBUG, 'my-error-category');
+        foreach ($matches as $match) {
+            if ($match->home_player == $player1->id && $match->away_player == $player2->id) {
+                $ret['score'] = $match->home_score;
+                $ret['id'] = $match->id;
+                JLog::add('score home ' . $ret['score'], JLog::DEBUG, 'my-error-category');
                 return $ret;
             }
-            elseif ($row->away_player == $player_row && $row->home_player == $player_column) {
-                $ret['score'] = $row->away_score;
-                $ret['id'] = $row->id;
-                JLog::add('score ' . $ret['score'], JLog::DEBUG, 'my-error-category');
+            elseif ($match->away_player == $player1->id && $match->home_player == $player2->id) {
+                $ret['score'] = $match->away_score;
+                $ret['id'] = $match->id;
+                JLog::add('score away ' . $ret['score'], JLog::DEBUG, 'my-error-category');
                 return $ret;
             }
         }
+
         JLog::add('score none', JLog::DEBUG, 'my-error-category');
         return $ret;
     }
 
-    public static function printMatchCell($userId, $player){
-        JLog::add('printMatchCell() ' . $userId . " " . $player->user_id, JLog::DEBUG, 'my-error-category');
+    public static function printMatchCell($player){
+        JLog::add('printMatchCell() ' . $player->user_id, JLog::DEBUG, 'my-error-category');
+
+        $user = JFactory::getUser();
 
         // highlight user with <strong>
-        if($userId == $player->user_id){
-            echo "<td><strong>" . $player->name . "</strong></td>";
+        if($user->id == $player->user_id){
+            echo "<td style='text-align:left;'><strong>" . $player->name . "</strong></td>";
         } else {
-            echo "<td>" . $player->name . "</td>";
+            echo "<td style='text-align:left'>" . $player->name . "</td>";
         }
     }
 
-    public static function printMatch($userId, $matches, $players, $player1, $player2){
+    public static function printMatch($matches, $players, $player1, $player2, $archive){
         JLog::add('printMatch() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
 
         echo "<tr>";
         foreach ($matches as $match){
             if($match->home_player == $player1->id && $match->away_player == $player2->id){
-                BoxleagueCustomHelper::printMatchCell($userId, $player1);
+                BoxleagueCustomHelper::printMatchCell($player1);
+                BoxleagueCustomHelper::printMatchScore($matches, $player1, $player2, $archive);
                 echo "<td>vs</td>";
-                BoxleagueCustomHelper::printMatchCell($userId, $player2);
+                BoxleagueCustomHelper::printMatchCell($player2);
+                BoxleagueCustomHelper::printMatchScore($matches, $player2, $player1, $archive);
             }
 
             if($match->home_player == $player2->id && $match->away_player == $player1->id) {
-                BoxleagueCustomHelper::printMatchCell($userId, $player1);
+                BoxleagueCustomHelper::printMatchCell($player1);
+                BoxleagueCustomHelper::printMatchScore($matches, $player1, $player2, $archive);
                 echo "<td>vs</td>";
-                BoxleagueCustomHelper::printMatchCell($userId, $player2);
+                BoxleagueCustomHelper::printMatchCell($player2);
+                BoxleagueCustomHelper::printMatchScore($matches, $player2, $player1, $archive);
             }
         }
         echo "</tr>";
     }
 
-    public static function printMatches($userId)
+    public static function printMatches()
     {
-        JLog::add('printMatches() ' . $userId . " " . $bx_name, JLog::DEBUG, 'my-error-category');
+        JLog::add('printMatches() ' . " " . $bx_name, JLog::DEBUG, 'my-error-category');
+
+        $user = JFactory::getUser();
 
         // get the current boxleague
         $boxleagueId = BoxleagueCustomHelper::getCurrentBoxleagueId();
+        $boxleague = BoxleagueCustomHelper::getBoxleagueById($boxleagueId);
 
-        // Get a database object
-        $db = JFactory::getDbo();
-        // Get all boxes for this boxleague
-        $query = $db->getQuery(true);
-        $query->select('*');
-        $query->from('#__boxleague_box');
-        $query->where($db->quoteName('boxleague_id') . ' = ' . $boxleagueId);
-        $query->order('ordering ASC');
-        // sets up a database query for later execution
-        $db->setQuery($query);
-        // fetch result as an object list
-        $result = $db->loadObjectList();
+        // get all of the boxes in the boxleague
+        $boxes = BoxleagueCustomHelper::getBoxesInBoxleague($boxleagueId);
 
         // for each box in the boxleague
-        foreach ($result as $row) {
-            // load the players
-            $players = BoxleagueCustomHelper::getPlayersInBox($row->id);
-            $matches = BoxleagueCustomHelper::getMatchesInBox($row->id);
+        // when box is found and handled return without carrying on
+        foreach ($boxes as $box) {
+            // get the players in the box
+            $players = BoxleagueCustomHelper::getPlayersInBox($box->id);
 
-            // see if player matches user id
             foreach ($players as $player) {
-                if($player->user_id == $userId){
+                // see if player is the user id
+                if($player->user_id == $user->id){
+                    // get the matches in the box
+                    $matches = BoxleagueCustomHelper::getMatchesInBox($box->id);
+
                     // print out the contact details
                     echo "<table class='table table-condensed table-responsive'>";
-                    echo "<tr'><td style='border: 0;' colspan='2'><h5>Contact Details</h5><p>";
-                    echo "Details can be changed using ";
+                    echo "<tr'><td style='border: 0;' colspan='2'><h5>Player Contact Details</h5><p>";
+                    echo "Your details can be changed via ";
                     echo "<a href='/index.php/my-account'>My Account</a>";
                     echo "</td></tr>";
                     foreach ($players as $contact) {
                         echo "<tr>";
-                        echo "<td style='text-align:left'>" . $contact->name . "</td>";
-                        echo "<td style='text-align:left'>" . $contact->email . "</td>";
+                        BoxleagueCustomHelper::printMatchCell($contact);
+                        echo "<td style='text-align:left'>" . "<a href='mailto:" . $contact->email . "'>" . $contact->email . "</a></td>";
                         echo "<td style='text-align:left'>" . str_replace("\"","",$contact->phone) . "</td>";
                         echo "</tr>";
                     }
@@ -373,27 +396,27 @@ class BoxleagueCustomHelper
                     // print out the matches
                     echo "<table style='border: none' class='table table-condensed table-responsive'>";
                     echo "<tr><td style='border: 0;' colspan='3'><h5>Week 1</h5></td></tr>";
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[2]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[4]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[3], $players[5]);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[2], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[4], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[3], $players[5], $boxleague->bl_archive);
                     echo "<tr><td style='border: 0;' colspan='3'><h5>Week 2</h5></td></tr>";
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[4]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[5]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[2], $players[3]);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[4], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[5], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[2], $players[3], $boxleague->bl_archive);
                     echo "<tr><td style='border: 0;' colspan='3'><h5>Week 3</h5></td></tr>";
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[5]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[3]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[2], $players[4]);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[5], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[3], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[2], $players[4], $boxleague->bl_archive);
                     echo "<tr><td style='border: 0;' colspan='3'><h5>Week 4</h5></td></tr>";
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[3]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[1], $players[2]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[4], $players[5]);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[3], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[1], $players[2], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[4], $players[5], $boxleague->bl_archive);
                     echo "<tr><td style='border: 0;' colspan='3'><h5>Week 5</h5></td></tr>";
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[0], $players[1]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[3], $players[4]);
-                    BoxleagueCustomHelper::printMatch($userId, $matches, $players, $players[5], $players[2]);
-                    echo "<tr><td style='border: 0;' colspan='3'><h5>Week 6</h5></td></tr>";
-                    echo "<tr><td colspan='3'>Spare</td></tr>";
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[0], $players[1], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[3], $players[4], $boxleague->bl_archive);
+                    BoxleagueCustomHelper::printMatch($matches, $players, $players[5], $players[2], $boxleague->bl_archive);
+                    echo "<tr><td style='border: 0;' colspan='5'><h5>Week 6</h5></td></tr>";
+                    echo "<tr><td colspan='5'>Spare</td></tr>";
                     echo "</table>";
 
                     // exit this function
@@ -401,6 +424,42 @@ class BoxleagueCustomHelper
                 }
             }
         }
+    }
+
+    public static function printMatchScore($matches, $player1, $player2, $archive)
+    {
+        JLog::add('printMatchScore() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
+
+        $user = JFactory::getUser();
+
+        $matchScore = BoxleagueCustomHelper::getMatchScore($matches, $player1, $player2);
+
+        // add link if user matches and boxleague is not archived
+        $addlink = $user->id == $player1->user_id && !$archive;
+
+        if($addlink) {
+            echo "<td style='background:#ffdcdc; font-weight: bold; min-width: 10px;'>";
+            echo "<a style='display:block;' href='" . "/index.php/matches/match/edit/";
+            echo $matchScore['id'];
+            echo "'>";
+        } else {
+            echo "<td>";
+        }
+
+        JLog::add('score ' . $matchScore['score'], JLog::DEBUG, 'my-error-category');
+
+        if(!is_null($matchScore['score'])){
+            echo $matchScore['score'];
+        } else {
+            echo "&nbsp;";
+        }
+
+        if($addlink) {
+            echo "</a></td>";
+        } else {
+            echo "</td>";
+        }
+        return $matchScore;
     }
 
     public static function printScoreBoard($box_id, $bx_name, $archive)
@@ -434,62 +493,48 @@ class BoxleagueCustomHelper
         // create body rows
         $count = 1;
         foreach ($players as $row) {
-            $runningTotal = 0;
+            $runningTotal = null;
             echo "<tr>";
             echo "<th style='color:white;background:#8445df;'>$count</th>";
             $count++;
 
+            echo "<td style='text-align:left;'>";
             // add strong
             if($user->id == $row->user_id) {
-                echo "<td style='text-align:left;'><strong>$row->name</strong></td>";
+                echo "<strong>$row->name</strong>";
             } else {
-                echo "<td style='text-align:left;'>$row->name</td>";
+                echo $row->name;
             }
+            echo "</td>";
 
             // create the row cells
+            $cells = 0;
             foreach ($players as $column){
+                $cells++;
+
                 if($row->name == $column->name){
                     echo "<td style='background:#4db748'>&nbsp</td>";
                 } else {
-                    $matchScore = BoxleagueCustomHelper::getMatchScore($matches, $row->id, $column->id);
-                    $runningTotal += $matchScore['score'];
-
-                    // add link if user matches and boxleague is not archived
-                    $addlink = $user->id == $row->user_id && !$archive;
-
-                    if($addlink) {
-                        echo "<td style='background:#ffffee;font-weight: bold;'>";
-                        echo "<a style='display:block;' href='" . "/index.php/matches/match/edit/";
-                        echo $matchScore['id'];
-                        echo "'>";
-                    } else {
-                        echo "<td>";
-                    }
-
-                    if($matchScore['score'] == 0){
-                        echo "&nbsp;";
-                    } else {
-                        echo $matchScore['score'];
-                    }
-
-                    if($addlink) {
-                        echo "</a></td>";
-                    } else {
-                        echo "</td>";
+                    $matchScore = BoxleagueCustomHelper::printMatchScore($matches, $row, $column, $archive);
+                    if(!is_null($matchScore['score'])) {
+                        $runningTotal += $matchScore['score'];
                     }
                 }
-                // remove strong
-                if($user->id == $row->user_id)
-                    echo "</strong>";
             }
 
-            $playerScore = $runningTotal;
-            if($playerScore == 0){
-                echo "<td></td>";
-            } else {
-                echo "<td><strong>$playerScore</strong></td>";
+            // add empty columns if less than 6 players
+            for ($i = $cells; $i < 6; $i++) {
+                echo "<td>&nbsp;</td>";
             }
-            echo "<tr>";
+
+            echo "<td>";
+            if(!is_null($runningTotal)){
+                echo "<strong>" . $runningTotal . "</strong>";
+            } else {
+                echo "&nbsp;";
+            }
+            echo "</td>";
+            echo "</tr>";
         }
         echo "</table>";
         echo "</div>";
@@ -565,6 +610,10 @@ class BoxleagueCustomHelper
         $result = $db->loadObjectList();
         foreach ($result as $row) {
             echo "<h3> $row->bl_name </h3>";
+            if(!$id->bl_archive){
+                echo "<p>To enter your match score, click on your box row in the shaded area.</p>";
+                echo "<p>For player contact details and week by week matches go to <a href='index.php/matches'>Matches</a>.</p>";
+            }
             echo HtmlHelper::date($row->bl_start_date, Text::_('DATE_FORMAT_LC3'));
             echo " - ";
             echo HtmlHelper::date($row->bl_end_date, Text::_('DATE_FORMAT_LC3'));
