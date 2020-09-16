@@ -85,7 +85,7 @@ class BoxleagueCustomHelper
         return $values;
     }
 
-    public static function buildMatches($box_id)
+    public static function buildMatches($boxleague_id, $box_id)
     {
         JLog::add('buildMatches() ' . $box_id, JLog::DEBUG, 'my-error-category');
 
@@ -102,11 +102,11 @@ class BoxleagueCustomHelper
         // Create a new query object
         $query = $db->getQuery(true);
         // Insert columns.
-        $columns = array('id', 'box_id', 'home_player', 'home_score', 'away_player', 'away_score', 'ordering', 'state', 'checked_out', 'checked_out_time', 'created_by', 'modified_by');
+        $columns = array('id', 'boxleague_id','box_id', 'home_player', 'home_score', 'away_player', 'away_score', 'ordering', 'state', 'checked_out', 'checked_out_time', 'created_by', 'modified_by');
         $values = array();
         while (!empty($players)) {
             $player = array_pop($players);
-            $values = BoxleagueCustomHelper::addMatches($box_id, $player->id, $players, $values);
+            $values = BoxleagueCustomHelper::addMatches($boxleague_id, $box_id, $player->id, $players, $values);
         }
         $query->insert($db->quoteName('#__boxleague_match'));
         $query->columns($columns);
@@ -274,7 +274,8 @@ class BoxleagueCustomHelper
     {
         JLog::add('getMatchesInBox() ' . $box_id, JLog::DEBUG, 'my-error-category');
 
-        BoxleagueCustomHelper::buildMatches($box_id);
+        // todo move build matches to somewhere it should be
+        //BoxleagueCustomHelper::buildMatches($box_id);
 
         // Get a database object
         $db = JFactory::getDbo();
@@ -380,9 +381,8 @@ class BoxleagueCustomHelper
 
                     // print out the contact details
                     echo "<table class='table table-condensed table-responsive'>";
-                    echo "<tr'><td style='border: 0;' colspan='2'><h5>Player Contact Details</h5><p>";
-                    echo "Your details can be changed via ";
-                    echo "<a href='/index.php/my-account'>My Account</a>";
+                    echo "<tr'><td style='border: 0;' colspan='2'><h5>Player Contact Details</h5>";
+                    echo "<p>Your details can be changed via <a href='/index.php/my-account'>My Account</a>.</p>";
                     echo "</td></tr>";
                     foreach ($players as $contact) {
                         echo "<tr>";
@@ -392,7 +392,7 @@ class BoxleagueCustomHelper
                         echo "</tr>";
                     }
                     echo "</table>";
-
+                    echo "<p>To enter your match score click in the shaded area.</p>";
                     // print out the matches
                     echo "<table style='border: none' class='table table-condensed table-responsive'>";
                     echo "<tr><td style='border: 0;' colspan='3'><h5>Week 1</h5></td></tr>";
@@ -611,7 +611,7 @@ class BoxleagueCustomHelper
         foreach ($result as $row) {
             echo "<h3> $row->bl_name </h3>";
             if(!$id->bl_archive){
-                echo "<p>To enter your match score, click on your box row in the shaded area.</p>";
+                echo "<p>To enter your match score click on your box row in the shaded area.</p>";
                 echo "<p>For player contact details and week by week matches go to <a href='index.php/matches'>Matches</a>.</p>";
             }
             echo HtmlHelper::date($row->bl_start_date, Text::_('DATE_FORMAT_LC3'));
