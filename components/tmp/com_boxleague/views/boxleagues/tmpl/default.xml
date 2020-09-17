@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="COM_BOXLEAGUE_TITLE_LIST_VIEW_BOXLEAGUES" option="View">
+        <message>
+                        <![CDATA[COM_BOXLEAGUE_TITLE_LIST_VIEW_BOXLEAGUES_DESC]]>
+        </message>
+	</layout>
+	
+</metadata>

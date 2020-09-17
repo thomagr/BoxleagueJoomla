@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.0" method="upgrade">
+    <name>com_boxleague</name>
+    <creationDate>2020-07-02</creationDate>
+    <copyright>2020 Graham Thomas</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Graham Thomas</author>
+    <authorEmail>graham.r.thomas@me.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>CVS: 1.0.0</version>
+    <description>COM_BOXLEAGUE_XML_DESCRIPTION</description>
+    
+    <scriptfile>script.php</scriptfile>
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/update.mysql.utf8.sql</file>
+        </sql>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <files folder="site">
+        <filename>index.html</filename>
+        <filename>boxleague.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <folder>views</folder>
+        <folder>models</folder>
+        <folder>controllers</folder>
+        <folder>helpers</folder>
+    </files>
+    <media destination="com_boxleague" folder="media">
+        <folder>js</folder>
+        <folder>css</folder>
+    </media>
+    <languages folder="site/languages">
+        
+			<language tag="en-GB">en-GB/en-GB.com_boxleague.ini</language>
+    </languages>
+    <administration>
+        <menu>COM_BOXLEAGUE</menu>
+        <submenu>
+            
+			<menu link="option=com_boxleague&amp;view=boxleagues" view="boxleagues" alt="Boxleague/Boxleagues">COM_BOXLEAGUE_TITLE_BOXLEAGUES</menu>
+
+			<menu link="option=com_boxleague&amp;view=boxes" view="boxes" alt="Boxleague/Boxes">COM_BOXLEAGUE_TITLE_BOXES</menu>
+
+			<menu link="option=com_boxleague&amp;view=players" view="players" alt="Boxleague/Players">COM_BOXLEAGUE_TITLE_PLAYERS</menu>
+
+			<menu link="option=com_boxleague&amp;view=matches" view="matches" alt="Boxleague/Matches">COM_BOXLEAGUE_TITLE_MATCHES</menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>index.html</filename>
+            <filename>boxleague.php</filename>
+            <folder>controllers</folder>
+            <folder>assets</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>sql</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+        </files>
+        <languages folder="administrator/languages">
+            
+			<language tag="en-GB">en-GB/en-GB.com_boxleague.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_boxleague.sys.ini</language>
+        </languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+        <plugin group="search" plugin="boxleague"/>
+    </plugins>
+    
+</extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.component-creator.com/ -->

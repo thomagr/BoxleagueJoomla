@@ -37,7 +37,7 @@ class JConfig {
 	public $sendmail = '/usr/sbin/sendmail';
 	public $smtpauth = '1';
 	public $smtpuser = 'tennis@saltc.co.uk';
-	public $smtppass = '7x4{A[D}ZkEJt2,z';
+	public $smtppass = 'k/kZW3d%G(kCC,xB';
 	public $smtphost = 'mail.uk2.net';
 	public $smtpsecure = 'none';
 	public $smtpport = '25';

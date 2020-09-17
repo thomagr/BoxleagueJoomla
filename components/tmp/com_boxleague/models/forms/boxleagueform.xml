@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="ordering"/>
+    <field name="state" default="1" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+      <option value="2">JARCHIVED</option>
+      <option value="-2">JTRASHED</option>
+    </field>
+    <field name="checked_out" type="hidden" filter="unset"/>
+    <field name="checked_out_time" default="0000-00-00 00:00:00" type="hidden" filter="unset"/>
+    <field name="bl_name" filter="safehtml" type="text" required="true" message="Boxleague name is a unique and required field" label="COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_NAME" description="COM_BOXLEAGUE_FORM_DESC_BOXLEAGUE_BL_NAME" hint="COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_NAME"/>
+    <field name="bl_start_date" class="inputbox" format="%Y-%m-%d" timeformat="24" filter="server_utc" translateformat="false" showtime="false" singleheader="false" todaybutton="true" weeknumbers="true" filltable="true" type="calendar" required="true" message="Start date is required" label="COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_START_DATE" description="COM_BOXLEAGUE_FORM_DESC_BOXLEAGUE_BL_START_DATE" hint="COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_START_DATE"/>
+    <field name="bl_end_date" class="inputbox" format="%Y-%m-%d" timeformat="24" filter="server_utc" translateformat="false" showtime="false" singleheader="false" todaybutton="true" weeknumbers="true" filltable="true" type="calendar" required="true" message="End date is required" label="COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_END_DATE" description="COM_BOXLEAGUE_FORM_DESC_BOXLEAGUE_BL_END_DATE" hint="COM_BOXLEAGUE_FORM_LBL_BOXLEAGUE_BL_END_DATE"/>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>

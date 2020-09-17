@@ -115,6 +115,28 @@ class BoxleagueCustomHelper
         $db->query();
     }
 
+    public static function scoreAdjust($score)
+    {
+        if($score == -1){
+            return 10; // walkover
+        } elseif($score == -2){
+            return $score = 0; // injured
+        } else {
+            return $score;
+        }
+    }
+
+    public static function scoreAdjustString($score)
+    {
+        if($score == -1){
+            return 'W'; // walkover
+        } elseif($score == -2){
+            return $score = 'Inj'; // injured
+        } else {
+            return $score;
+        }
+    }
+
     public static function calculatePlayerBoxScore($box_id, $player_id)
     {
         JLog::add('calculatePlayerBoxScore() ' . $box_id . " " . $player_id, JLog::DEBUG, 'my-error-category');
@@ -131,16 +153,15 @@ class BoxleagueCustomHelper
         $db->setQuery($query);
         // fetch result as an object list
         $result = $db->loadObjectList();
-        $score = 0;
+        $runningScore = 0;
         foreach ($result as $row) {
             if ($row->home_player == $player_id) {
-                $score = $score + $row->home_score;
-            }
-            if ($row->away_player == $player_id) {
-                $score = $score + $row->away_score;
+                $runningScore += BoxleagueCustomHelper::scoreAdjust($row->home_score);
+            } elseif ($row->away_player == $player_id) {
+                $runningScore += BoxleagueCustomHelper::scoreAdjust($row->away_score);
             }
         }
-        return $score;
+        return $runningScore;
     }
 
     public static function getTableContentById($id, $db_name)
@@ -274,9 +295,6 @@ class BoxleagueCustomHelper
     {
         JLog::add('getMatchesInBox() ' . $box_id, JLog::DEBUG, 'my-error-category');
 
-        // todo move build matches to somewhere it should be
-        //BoxleagueCustomHelper::buildMatches($box_id);
-
         // Get a database object
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
@@ -300,13 +318,13 @@ class BoxleagueCustomHelper
         $ret = array();
         foreach ($matches as $match) {
             if ($match->home_player == $player1->id && $match->away_player == $player2->id) {
-                $ret['score'] = $match->home_score;
+                $ret['score'] = BoxleagueCustomHelper::scoreAdjustString($match->home_score);
                 $ret['id'] = $match->id;
                 JLog::add('score home ' . $ret['score'], JLog::DEBUG, 'my-error-category');
                 return $ret;
             }
             elseif ($match->away_player == $player1->id && $match->home_player == $player2->id) {
-                $ret['score'] = $match->away_score;
+                $ret['score'] = BoxleagueCustomHelper::scoreAdjustString($match->away_score);
                 $ret['id'] = $match->id;
                 JLog::add('score away ' . $ret['score'], JLog::DEBUG, 'my-error-category');
                 return $ret;
@@ -439,7 +457,7 @@ class BoxleagueCustomHelper
 
         if($addlink) {
             echo "<td style='background:#ffdcdc; font-weight: bold; min-width: 10px;'>";
-            echo "<a style='display:block;' href='" . "/index.php/matches/match/edit/";
+            echo "<a style='display:block;' href='" . "/index.php/my-matches/match/edit/";
             echo $matchScore['id'];
             echo "'>";
         } else {
@@ -529,7 +547,7 @@ class BoxleagueCustomHelper
 
             echo "<td>";
             if(!is_null($runningTotal)){
-                echo "<strong>" . $runningTotal . "</strong>";
+                echo "<strong>" . BoxleagueCustomHelper::calculatePlayerBoxScore($box_id, $row->id) . "</strong>";
             } else {
                 echo "&nbsp;";
             }
@@ -612,7 +630,7 @@ class BoxleagueCustomHelper
             echo "<h3> $row->bl_name </h3>";
             if(!$id->bl_archive){
                 echo "<p>To enter your match score click on your box row in the shaded area.</p>";
-                echo "<p>For player contact details and week by week matches go to <a href='index.php/matches'>Matches</a>.</p>";
+                echo "<p>For player contact details and week by week matches go to <a href='index.php/my-matches'>My Matches</a>.</p>";
             }
             echo HtmlHelper::date($row->bl_start_date, Text::_('DATE_FORMAT_LC3'));
             echo " - ";

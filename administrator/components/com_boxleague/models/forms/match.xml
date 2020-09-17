@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="ordering"/>
+    <field name="state" default="1" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+      <option value="2">JARCHIVED</option>
+      <option value="-2">JTRASHED</option>
+    </field>
+    <field name="checked_out" type="hidden" filter="unset"/>
+    <field name="checked_out_time" default="0000-00-00 00:00:00" type="hidden" filter="unset"/>
+    <field name="created_by" type="createdby" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_CREATED_BY" description="COM_BOXLEAGUE_FORM_DESC_MATCH_CREATED_BY" hidden="true" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_CREATED_BY"/>
+    <field name="modified_by" type="modifiedby" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_MODIFIED_BY" description="COM_BOXLEAGUE_FORM_DESC_MATCH_MODIFIED_BY" hidden="true" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_MODIFIED_BY"/>
+    <field name="box_id" type="foreignkey" label="COM_BOXLEAGUE_FORM_LBL_MATCH_BOX_ID" description="COM_BOXLEAGUE_FORM_DESC_MATCH_BOX_ID" class="inputbox" input_type="list" table="#__boxleague_box" key_field="id" value_multiple="1" value_field_multiple="boxleague_id,bx_name" value_field="fk_value" separator=" - " required="true" message="A parent box must be selected" default=""/>
+    <field name="home_player" type="foreignkey" label="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_PLAYER" description="COM_BOXLEAGUE_FORM_DESC_MATCH_HOME_PLAYER" class="inputbox" input_type="list" table="#__boxleague_player" key_field="id" value_multiple="1" value_field_multiple="id,box_id,user_id" value_field="fk_value" separator=" - " required="true" message="Home player must be selected" default=""/>
+    <field name="away_player" type="foreignkey" label="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_PLAYER" description="COM_BOXLEAGUE_FORM_DESC_MATCH_AWAY_PLAYER" class="inputbox" input_type="list" table="#__boxleague_player" key_field="id" value_multiple="1" value_field_multiple="id,box_id,user_id" value_field="fk_value" separator=" - " required="true" message="Away player must be selected" default=""/>
+    <field name="home_score" filter="safehtml" min="0" type="number" required="true" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_SCORE" description="COM_BOXLEAGUE_FORM_DESC_MATCH_HOME_SCORE" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_HOME_SCORE"/>
+    <field name="away_score" filter="safehtml" min="0" type="number" required="true" default="0" label="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_SCORE" description="COM_BOXLEAGUE_FORM_DESC_MATCH_AWAY_SCORE" hint="COM_BOXLEAGUE_FORM_LBL_MATCH_AWAY_SCORE"/>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="filter">
+        <field name="search" type="text" hint="COM_BOXLEAGUE_SEARCH_FILTER_SUBMIT"
+               label="COM_USERS_FILTER_SEARCH_DESC"
+               class="js-stools-search-string" />
+
+        <field name="bl_start_date.from" label="COM_BOXLEAGUE_BOXLEAGUES_BL_START_DATE_FILTER_FROM" type="calendar" onchange="this.form.submit();" filter="safehtml" class="inputbox" showtime="false" translateformat="false" hint="COM_BOXLEAGUE_BOXLEAGUES_BL_START_DATE_FILTER_FROM"/>
+<field name="bl_start_date.to" label="COM_BOXLEAGUE_BOXLEAGUES_BL_START_DATE_FILTER_TO" type="calendar" onchange="this.form.submit();" filter="safehtml" class="inputbox" showtime="false" translateformat="false" hint="COM_BOXLEAGUE_BOXLEAGUES_BL_START_DATE_FILTER_TO"/>
+<field name="bl_end_date.from" label="COM_BOXLEAGUE_BOXLEAGUES_BL_END_DATE_FILTER_FROM" type="calendar" onchange="this.form.submit();" filter="safehtml" class="inputbox" showtime="false" translateformat="false" hint="COM_BOXLEAGUE_BOXLEAGUES_BL_END_DATE_FILTER_FROM"/>
+<field name="bl_end_date.to" label="COM_BOXLEAGUE_BOXLEAGUES_BL_END_DATE_FILTER_TO" type="calendar" onchange="this.form.submit();" filter="safehtml" class="inputbox" showtime="false" translateformat="false" hint="COM_BOXLEAGUE_BOXLEAGUES_BL_END_DATE_FILTER_TO"/>
+
+
+    </fields>
+</form>

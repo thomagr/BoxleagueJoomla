@@ -1,0 +1,57 @@
+.icon-48-boxleagues {
+      background-image: url(../images/l_boxleagues.png);
+      padding-left:60px!important;
+}
+
+.icon-48-boxleague {
+      background-image: url(../images/l_boxleagues.png);
+      padding-left:60px!important;
+}
+
+.color-box-boxleagues { 
+      float: left;      width: 15px;      height: 15px;      margin-right: 5px;      border: 1px solid rgba(0, 0, 0, .2);}
+
+.icon-48-boxes {
+      background-image: url(../images/l_boxes.png);
+      padding-left:60px!important;
+}
+
+.icon-48-box {
+      background-image: url(../images/l_boxes.png);
+      padding-left:60px!important;
+}
+
+.color-box-boxes { 
+      float: left;      width: 15px;      height: 15px;      margin-right: 5px;      border: 1px solid rgba(0, 0, 0, .2);}
+
+.icon-48-players {
+      background-image: url(../images/l_players.png);
+      padding-left:60px!important;
+}
+
+.icon-48-player {
+      background-image: url(../images/l_players.png);
+      padding-left:60px!important;
+}
+
+.color-box-players { 
+      float: left;      width: 15px;      height: 15px;      margin-right: 5px;      border: 1px solid rgba(0, 0, 0, .2);}
+
+.icon-48-matches {
+      background-image: url(../images/l_matches.png);
+      padding-left:60px!important;
+}
+
+.icon-48-match {
+      background-image: url(../images/l_matches.png);
+      padding-left:60px!important;
+}
+
+.color-box-matches { 
+      float: left;      width: 15px;      height: 15px;      margin-right: 5px;      border: 1px solid rgba(0, 0, 0, .2);}
+
+
+
+.other-filters{
+    padding: 0 14px;
+}
