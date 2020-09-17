@@ -453,7 +453,7 @@ class BoxleagueCustomHelper
         $matchScore = BoxleagueCustomHelper::getMatchScore($matches, $player1, $player2);
 
         // add link if user matches and boxleague is not archived
-        $addlink = $user->id == $player1->user_id && !$archive;
+        $addlink = ($user->id == $player1->user_id || $user->authorise('core.admin')) && !$archive;
 
         if($addlink) {
             echo "<td style='background:#ffdcdc; font-weight: bold; min-width: 10px;'>";
@@ -642,6 +642,12 @@ class BoxleagueCustomHelper
 
     public static function canUserEdit($match, $user){
         JLog::add('canUserEdit()', JLog::DEBUG, 'my-error-category');
+
+        $user = JFactory::getUser();
+
+        if($user->authorise('core.admin')){
+            return true;
+        }
 
         $home_player = BoxleagueCustomHelper::getPlayerById($match->home_player);
         $away_player = BoxleagueCustomHelper::getPlayerById($match->away_player);
