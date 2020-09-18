@@ -284,7 +284,7 @@ class BoxleagueModelBoxleague extends \Joomla\CMS\MVC\Model\AdminModel
         $query = $db->getQuery(true);
         $query->select('*');
         $query->from('#__player_import AS player');
-        $query->order('box ASC');
+        $query->order('box, player ASC');
         // sets up a database query for later execution
         $db->setQuery($query);
 

@@ -406,7 +406,11 @@ class BoxleagueCustomHelper
                         echo "<tr>";
                         BoxleagueCustomHelper::printMatchCell($contact);
                         echo "<td style='text-align:left'>" . "<a href='mailto:" . $contact->email . "'>" . $contact->email . "</a></td>";
-                        echo "<td style='text-align:left'>" . str_replace("\"","",$contact->phone) . "</td>";
+                        $phone = str_replace("\"","",$contact->phone);
+                        if($phone == null) {
+                            $phone = 'no phone number provided';
+                        }
+                        echo "<td style='text-align:left'>" . $phone . "</td>";
                         echo "</tr>";
                     }
                     echo "</table>";
