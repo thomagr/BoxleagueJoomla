@@ -203,19 +203,39 @@ class BoxleagueCustomHelper
 
     public static function getCurrentBoxleagueId()
     {
+        $query = null;
+
         // return the first unarchived boxleague
         // Get a database object
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('id')
             ->from('#__boxleague_boxleague')
-            ->where('bl_archive = 0')
+            ->where('bl_archive = 0 AND state = 1')
             ->order('id DESC')
             ->setLimit('1');
         // sets up a database query for later execution
         $db->setQuery($query);
-        // fetch result as an object list
+        // fetch result as an object
         $id = $db->loadResult();
+
+        // if we don't have an unarchived and valid boxleague find the last one created and not deleted
+        if($id == null)
+        {
+            // return a boxleague
+            // Get a database object
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('id')
+                ->from('#__boxleague_boxleague')
+                ->where('state = 1')
+                ->order('id DESC')
+                ->setLimit('1');
+            // sets up a database query for later execution
+            $db->setQuery($query);
+            // fetch result as an object
+            $id = $db->loadResult();
+        }
 
         JLog::add('getCurrentBoxleagueId() ' . $id, JLog::DEBUG, 'my-error-category');
 
@@ -618,6 +638,35 @@ class BoxleagueCustomHelper
     public static function printBoxleague($id)
     {
         JLog::add('printBoxleague() ' . $id . " " . $bx_name, JLog::DEBUG, 'my-error-category');
+
+        // Get a database object
+        $db = JFactory::getDbo();
+        // Get all boxes for this boxleague
+        $query = $db->getQuery(true);
+        $query->select('*');
+        $query->from('#__boxleague_boxleague');
+        $query->where($db->quoteName('id') . ' = ' . $id);
+        // sets up a database query for later execution
+        $db->setQuery($query);
+        // fetch result as an object list
+        $result = $db->loadObjectList();
+        foreach ($result as $row) {
+            echo "<h3> $row->bl_name </h3>";
+            if(!$id->bl_archive){
+                echo "<p>To enter your match score click on your box row in the shaded area.</p>";
+                echo "<p>For player contact details and week by week matches go to <a href='index.php/my-matches'>My Matches</a>.</p>";
+            }
+            echo HtmlHelper::date($row->bl_start_date, Text::_('DATE_FORMAT_LC3'));
+            echo " - ";
+            echo HtmlHelper::date($row->bl_end_date, Text::_('DATE_FORMAT_LC3'));
+
+            BoxleagueCustomHelper::printBoxes($row->id, $row->bl_archive);
+        }
+    }
+
+    public static function printLeagueTable()
+    {
+        JLog::add('printLeagueTable()', JLog::DEBUG, 'my-error-category');
 
         // Get a database object
         $db = JFactory::getDbo();
