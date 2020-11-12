@@ -297,11 +297,33 @@ class BoxleagueCustomHelper
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
         $query = $db->getQuery(true);
-        $query->select('player.*, user.name, user.email, profile.profile_value as phone');
+        $query->select('player.*, user.username, user.email, profile.profile_value as phone');
         $query->from('#__boxleague_player AS player');
         $query->join('LEFT', '#__users AS user ON user.id = user_id');
         $query->join('LEFT', '#__user_profiles AS profile ON user.id = profile.user_id');
         $query->where($db->quoteName('box_id') . ' = ' . $box_id,
+            $db->quoteName('profile.key') . ' = ' . $db->quoteName('profile.phone'));
+        // sets up a database query for later execution
+        $db->setQuery($query);
+        // fetch result as an object list
+        $result = $db->loadObjectList();
+
+        return $result;
+    }
+
+    public static function getPlayersInBoxleague($boxleague_id)
+    {
+        JLog::add('getPlayersInBoxleague() ' . $boxleague_id, JLog::DEBUG, 'my-error-category');
+
+        // Get a database object
+        $db = JFactory::getDbo();
+        // Get all boxes for this boxleague
+        $query = $db->getQuery(true);
+        $query->select('player.*, user.username, user.email, profile.profile_value as phone');
+        $query->from('#__boxleague_player AS player');
+        $query->join('LEFT', '#__users AS user ON user.id = user_id');
+        $query->join('LEFT', '#__user_profiles AS profile ON user.id = profile.user_id');
+        $query->where($db->quoteName('boxleague_id') . ' = ' . $boxleague_id,
             $db->quoteName('profile.key') . ' = ' . $db->quoteName('profile.phone'));
         // sets up a database query for later execution
         $db->setQuery($query);
@@ -330,9 +352,28 @@ class BoxleagueCustomHelper
         return $result;
     }
 
+    public static function getMatchesInBoxleague($boxleague_id)
+    {
+        JLog::add('getMatchesInBoxleague() ' . $box_id, JLog::DEBUG, 'my-error-category');
+
+        // Get a database object
+        $db = JFactory::getDbo();
+        // Get all boxes for this boxleague
+        $query = $db->getQuery(true);
+        $query->select('*');
+        $query->from('#__boxleague_match');
+        $query->where($db->quoteName('boxleague_id') . ' = ' . $boxleague_id);
+        // sets up a database query for later execution
+        $db->setQuery($query);
+        // fetch result as an object list
+        $result = $db->loadObjectList();
+
+        return $result;
+    }
+
     public static function getMatchScore($matches, $player1, $player2)
     {
-        JLog::add('getMatchScore() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
+        JLog::add('getMatchScore() ' . $player1->username . " " . $player2->username, JLog::DEBUG, 'my-error-category');
 
         // return array of results [score, match_id]
         $ret = array();
@@ -362,14 +403,14 @@ class BoxleagueCustomHelper
 
         // highlight user with <strong>
         if($user->id == $player->user_id){
-            echo "<td style='text-align:left;'><strong>" . $player->name . "</strong></td>";
+            echo "<td style='text-align:left;'><strong>" . $player->username . "</strong></td>";
         } else {
-            echo "<td style='text-align:left'>" . $player->name . "</td>";
+            echo "<td style='text-align:left'>" . $player->username . "</td>";
         }
     }
 
     public static function printMatch($matches, $players, $player1, $player2, $archive){
-        JLog::add('printMatch() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
+        JLog::add('printMatch() ' . $player1->username . " " . $player2->username, JLog::DEBUG, 'my-error-category');
 
         echo "<tr>";
         foreach ($matches as $match){
@@ -470,7 +511,7 @@ class BoxleagueCustomHelper
 
     public static function printMatchScore($matches, $player1, $player2, $archive)
     {
-        JLog::add('printMatchScore() ' . $player1->name . " " . $player2->name, JLog::DEBUG, 'my-error-category');
+        JLog::add('printMatchScore() ' . $player1->username . " " . $player2->username, JLog::DEBUG, 'my-error-category');
 
         $user = JFactory::getUser();
 
@@ -504,7 +545,7 @@ class BoxleagueCustomHelper
         return $matchScore;
     }
 
-    public static function printScoreBoard($box_id, $bx_name, $archive)
+    public static function printBox($box_id, $bx_name, $archive)
     {
         JLog::add('printScoreBoard() ' . $box_id . " " . $bx_name, JLog::DEBUG, 'my-error-category');
 
@@ -543,9 +584,9 @@ class BoxleagueCustomHelper
             echo "<td style='text-align:left;'>";
             // add strong
             if($user->id == $row->user_id) {
-                echo "<strong>$row->name</strong>";
+                echo "<strong>$row->username</strong>";
             } else {
-                echo $row->name;
+                echo $row->username;
             }
             echo "</td>";
 
@@ -554,7 +595,7 @@ class BoxleagueCustomHelper
             foreach ($players as $column){
                 $cells++;
 
-                if($row->name == $column->name){
+                if($row->username == $column->username){
                     echo "<td style='background:#4db748'>&nbsp</td>";
                 } else {
                     $matchScore = BoxleagueCustomHelper::printMatchScore($matches, $row, $column, $archive);
@@ -590,7 +631,7 @@ class BoxleagueCustomHelper
         $db = JFactory::getDbo();
         // Get all boxes for this boxleague
         $query = $db->getQuery(true);
-        $query->select('player.*, user.name');
+        $query->select('player.*, user.username');
         $query->from('#__boxleague_player AS player');
         $query->join('LEFT', '#__users AS user ON user.id = user_id');
         $query->where($db->quoteName('box_id') . ' = ' . $box_id);
@@ -603,7 +644,7 @@ class BoxleagueCustomHelper
         foreach ($result as $row) {
             $count--;
             echo "<tr>";
-            echo "<td>$row->name</td>";
+            echo "<td>$row->username</td>";
             $score = BoxleagueCustomHelper::calculatePlayerBoxScore($box_id, $row->id);
             echo "<td style='text-align:right'>$score</td>";
             echo "<tr>";
@@ -631,7 +672,7 @@ class BoxleagueCustomHelper
         // fetch result as an object list
         $result = $db->loadObjectList();
         foreach ($result as $row) {
-            BoxleagueCustomHelper::printScoreBoard($row->id, $row->bx_name, $archive);
+            BoxleagueCustomHelper::printBox($row->id, $row->bx_name, $archive);
         }
     }
 
@@ -664,33 +705,61 @@ class BoxleagueCustomHelper
         }
     }
 
+    public static function compare($object1, $object2)
+    {
+        if ($object1->box_order == $object2->box_order) {
+            if($object1->score == $object2->score){
+                return 0;
+            }
+            return ($object1->score > $object2->score) ? -1 : 1;
+        }
+        return ($object1->box_order < $object2->box_order) ? -1 : 1;
+    }
+
     public static function printLeagueTable()
     {
         JLog::add('printLeagueTable()', JLog::DEBUG, 'my-error-category');
 
-        // Get a database object
-        $db = JFactory::getDbo();
-        // Get all boxes for this boxleague
-        $query = $db->getQuery(true);
-        $query->select('*');
-        $query->from('#__boxleague_boxleague');
-        $query->where($db->quoteName('id') . ' = ' . $id);
-        // sets up a database query for later execution
-        $db->setQuery($query);
-        // fetch result as an object list
-        $result = $db->loadObjectList();
-        foreach ($result as $row) {
-            echo "<h3> $row->bl_name </h3>";
-            if(!$id->bl_archive){
-                echo "<p>To enter your match score click on your box row in the shaded area.</p>";
-                echo "<p>For player contact details and week by week matches go to <a href='index.php/my-matches'>My Matches</a>.</p>";
-            }
-            echo HtmlHelper::date($row->bl_start_date, Text::_('DATE_FORMAT_LC3'));
-            echo " - ";
-            echo HtmlHelper::date($row->bl_end_date, Text::_('DATE_FORMAT_LC3'));
+        $boxleague_id = BoxleagueCustomHelper::getCurrentBoxleagueId();
 
-            BoxleagueCustomHelper::printBoxes($row->id, $row->bl_archive);
+        $boxleague = BoxleagueCustomHelper::getBoxleagueById($boxleague_id);
+
+        $players = BoxleagueCustomHelper::getPlayersInBoxleague($boxleague_id);
+        $matches = BoxleagueCustomHelper::getMatchesInBoxleague($boxleague_id);
+        $boxes = BoxleagueCustomHelper::getBoxesInBoxleague($boxleague_id);
+
+        // build the player total score list
+        foreach ($players as $player) {
+            $score = 0;
+            foreach ($matches as $match) {
+                if ($match->home_player == $player->id) {
+                    $score += BoxleagueCustomHelper::scoreAdjust($match->home_score);
+                } elseif ($match->away_player == $player->id) {
+                    $score += BoxleagueCustomHelper::scoreAdjust($match->away_score);
+                }
+            }
+            $player->score = $score;
+
+            foreach ($boxes as $box) {
+                if ($player->box_id == $box->id) {
+                    $player->box_name = $box->bx_name;
+                    $player->box_order = $box->bx_order;
+                }
+            }
         }
+
+        // sort in place
+        usort($players, 'BoxleagueCustomHelper::compare');
+
+        echo "<h3>" . $boxleague->bl_name . "</h3>";
+        echo "<table class='table' style='width:auto'>";
+        $count = 1;
+        foreach ($players as $player) {
+            echo "<tr>";
+            echo "<td>" . $player->box_name . "</td><td>" . $count++ . "</td><td style='text-align:left'>" . $player->username . "</td><td>" . $player->score . "</td>";
+            echo "</tr>";
+        }
+        echo "</table>";
     }
 
     public static function canUserEdit($match, $user){

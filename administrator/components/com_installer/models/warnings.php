@@ -152,13 +152,13 @@ class InstallerModelWarnings extends JModelList
 					'description' => JText::_('COM_INSTALLER_MSG_WARNINGS_UPLOADBIGGERTHANPOSTDESC'));
 		}
 
-		if ($post_max_size < (16 * 1024 * 1024)) // 8MB
+		if ($post_max_size < (8 * 1024 * 1024)) // 8MB
 		{
 			$messages[] = array('message' => JText::_('COM_INSTALLER_MSG_WARNINGS_SMALLPOSTSIZE'),
 					'description' => JText::_('COM_INSTALLER_MSG_WARNINGS_SMALLPOSTSIZEDESC'));
 		}
 
-		if ($upload_max_filesize < (16 * 1024 * 1024)) // 8MB
+		if ($upload_max_filesize < (8 * 1024 * 1024)) // 8MB
 		{
 			$messages[] = array('message' => JText::_('COM_INSTALLER_MSG_WARNINGS_SMALLUPLOADSIZE'),
 					'description' => JText::_('COM_INSTALLER_MSG_WARNINGS_SMALLUPLOADSIZEDESC'));
