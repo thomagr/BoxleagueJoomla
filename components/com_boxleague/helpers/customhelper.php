@@ -731,18 +731,69 @@ class BoxleagueCustomHelper
         // build the player total score list
         foreach ($players as $player) {
             $score = 0;
+            $numberOfMatches = 0;
+
             foreach ($matches as $match) {
+                $ownScore = 0;
+                $opponentScore = 0;
+
                 if ($match->home_player == $player->id) {
                     $score += BoxleagueCustomHelper::scoreAdjust($match->home_score);
+
+                    $ownScore = $match->home_score;
+                    $opponentScore = $match->away_score;
+
+                    // $opponent = BoxleagueCustomHelper::getPlayerById($match->away_player);
+                    // if($opponent->user_id == 655) // Spare
+                    // {
+                    //     $opponentScore++; 
+                    // }
                 } elseif ($match->away_player == $player->id) {
                     $score += BoxleagueCustomHelper::scoreAdjust($match->away_score);
+
+                    $ownScore = $match->away_score;
+                    $opponentScore = $match->home_score;
+
+                    // $opponent = BoxleagueCustomHelper::getPlayerById($match->home_player);
+                    // if($opponent->user_id == 655) // Spare
+                    // {
+                    //     $opponentScore++; 
+                    // }
+                }
+
+                switch($ownScore) {
+                    case -2: // Injured don't count my match
+                        break;
+                    case -1: // My walkover so count the match
+                        $numberOfMatches++;
+                        break;
+                    default:
+                        switch($opponentScore) {
+                            case -2: // they are injured so count my match
+                                $numberOfMatches++;
+                                break;
+                            case -1: // Their walkover so don't count my match
+                                break;
+                            default:
+                                // if the match has a score then count match
+                                if($ownScore != 0 || $opponentScore != 0){
+                                    $numberOfMatches++;
+                                }
+                        }
+                        break;
                 }
             }
+
             $player->score = $score;
+            $player->matches = $numberOfMatches;
 
             foreach ($boxes as $box) {
                 if ($player->box_id == $box->id) {
-                    $player->box_name = $box->bx_name;
+                    // remove the leading 'Box ' text
+                    $prefix = "Box ";
+                    $boxName = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $box->bx_name);
+
+                    $player->box_name = $boxName;
                     $player->box_order = $box->bx_order;
                 }
             }
@@ -753,11 +804,22 @@ class BoxleagueCustomHelper
 
         echo "<h3>" . $boxleague->bl_name . "</h3>";
         echo "<table class='table' style='width:auto'>";
+        echo "<tr>
+                <th>Position</th>
+                <th>Name</th>
+                <th>Box</th>
+                <th>Points</th>
+                <th>#Matches</th>
+              </tr>";
         $count = 1;
         foreach ($players as $player) {
-            echo "<tr>";
-            echo "<td>" . $player->box_name . "</td><td>" . $count++ . "</td><td style='text-align:left'>" . $player->username . "</td><td>" . $player->score . "</td>";
-            echo "</tr>";
+            echo "<tr>
+                    <td>" . $count++ . "</td>
+                    <td style='text-align:left'>" . $player->username . "</td>
+                    <td>" . $player->box_name . "</td>
+                    <td>" . $player->score . "</td>
+                    <td>" . $player->matches . "</td>
+                </tr>";
         }
         echo "</table>";
     }
