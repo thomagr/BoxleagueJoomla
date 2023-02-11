@@ -600,7 +600,11 @@ class BoxleagueCustomHelper
                 } else {
                     $matchScore = BoxleagueCustomHelper::printMatchScore($matches, $row, $column, $archive);
                     if(!is_null($matchScore['score'])) {
-                        $runningTotal += $matchScore['score'];
+                        if(is_null($runningTotal)){
+                            $runningTotal = $matchScore['score'];
+                        } else {
+                            $runningTotal .= $matchScore['score'];
+                        }
                     }
                 }
             }

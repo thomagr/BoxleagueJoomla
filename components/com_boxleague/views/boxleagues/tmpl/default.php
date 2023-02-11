@@ -106,7 +106,7 @@ $document->addStyleSheet(Uri::root() . 'media/com_boxleague/css/list.css');
                     </td>
 
                     <td>
-                        <?php if($item->bl_archive == 1) echo Yes; ?>
+                        <?php if($item->bl_archive == 1) echo "Yes"; ?>
                     </td>
 
 
